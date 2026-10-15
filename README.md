@@ -1,246 +1,175 @@
 # Hardware Software URL Finder
 
-제품 이름으로 공식 드라이버나 설정 프로그램을 찾다 보면 비슷한 모델의 지원 페이지, 쇼핑몰, 설치 파일이 한꺼번에 나옵니다. `V2`, `D4`, `WiFi 7` 하나가 다르면 그럴듯한 링크도 오답이 됩니다.
+[![CI](https://github.com/HoMongYi/hardware-software-url-finder/actions/workflows/ci.yml/badge.svg)](https://github.com/HoMongYi/hardware-software-url-finder/actions/workflows/ci.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/HoMongYi/hardware-software-url-finder)](https://github.com/HoMongYi/hardware-software-url-finder/releases/tag/v0.1.0)
 
-HSUF는 제품 이름으로 공식 소프트웨어 URL을 찾아 판정하는 범용 Node.js 엔진입니다. 실제 PC 유통·고객지원 업무에서 반복되는 URL 확인 문제를 줄이기 위해 시작한 개인 오픈소스 프로젝트입니다. 특정 회사의 공식 제품이나 사내 시스템이 아닙니다. 먼저 Registry를 보고, 필요한 경우에만 검색합니다. AI를 쓰더라도 후보 비교까지만 맡기고, 마지막 URL은 Core가 따로 확인합니다.
+**제품명으로 공식 드라이버·설정 프로그램·지원 페이지를 찾고, 그 주소가 정확한 제품용인지 확인하는 도구입니다.**
 
-**v0.1.0**은 최초 공개 버전이며 [MIT License](LICENSE)로 제공합니다. 저장소는 [HoMongYi/hardware-software-url-finder](https://github.com/HoMongYi/hardware-software-url-finder)입니다. Source와 Skill/Plugin 패키지는 GitHub Release Asset으로 제공합니다. npm registry에는 publish하지 않습니다.
+예를 들어 메인보드 드라이버를 검색했는데 이름이 거의 같은 다른 보드의 페이지가 나오거나, 키보드 설정 프로그램을 찾다가 쇼핑몰·블로그 링크만 잔뜩 본 적이 있을 겁니다. Hardware Software URL Finder(줄여서 **HSUF**)는 그런 일을 줄이려고 만들었습니다.
+
+PC 부품과 주변기기 모두 대상으로 하며, 특정 쇼핑몰의 상품번호나 사내 시스템이 없어도 사용할 수 있습니다. **Node.js CLI**, **CSV**, **Codex/Claude Code용 Agent Skill**, **MCP**, **HTTP API**를 제공합니다.
+
+**[바로 사용해 보기](docs/QUICK_START.md)** · [AI Agent에 연결](docs/AGENTS.md) · [SerpAPI + OpenAI 설정](docs/PROVIDER_RECIPES.md) · [문서 모음](docs/README.md) · [v0.1.0 다운로드](https://github.com/HoMongYi/hardware-software-url-finder/releases/tag/v0.1.0)
+
+## 제품명 하나를 넣으면
+
+가령 다음처럼 입력한다고 해보겠습니다.
 
 ```text
-Catalog / CSV / Agent
-        ↓
-HSUF Core
-        ↓
-Public Registry
-        ↓
-필요 시 Search / Judge Provider
-        ↓
-Core Audit
-        ↓
-fill / blank / review
+[Canon] PIXMA E3470
 ```
 
-## 결과 읽기
+이 제품은 **Registry(확인된 제조사·모델 정보 모음)**에 정확한 공식 지원 페이지가 등록되어 있습니다. 그래서 별도 검색이나 AI 호출 없이 해당 페이지를 반환할 수 있습니다.
 
-| 결과 | 뜻 | URL |
+```text
+https://asia.canon/en/support/PIXMA%20E3470/model
+```
+
+HSUF는 **검색 결과를 곧바로 정답으로 쓰지 않습니다.** 먼저 이미 확인한 공식 정보를 찾아보고, 거기서 해결되지 않는 제품만 필요에 따라 온라인으로 조사합니다.
+
+```mermaid
+flowchart TD
+    A["제품명 입력"] --> B["제조사와 모델 구분"]
+    B --> C{"별도 프로그램이 없는 물품인가?"}
+    C -->|예| BL["blank · URL 없음"]
+    C -->|아니요| D["Registry에 확인된 모델이 있나?"]
+    D -->|있음| E["기록된 공식 URL과 검증일 확인"]
+    D -->|없음| F{"온라인 조사 사용?"}
+    F -->|아니요| RV["review · 확인 필요"]
+    F -->|예| G["검색 · 후보 비교 · 페이지 검사"]
+    E --> H{"검증 통과?"}
+    G --> H
+    H -->|예| OK["fill · 공식 URL"]
+    H -->|아니요| RV
+```
+
+### 결과는 세 가지입니다
+
+| 결과 | 뜻 | URL 칸 |
 |---|---|---|
-| `fill` | 정확 모델과 공식 지원 근거를 확인했습니다. | `primary.url` |
-| `blank` | 키캡 같은 수동 부품으로, 소프트웨어가 필요하지 않습니다. | 없음 |
-| `review` | 모델, 호환성, 리비전 또는 확인 근거가 부족합니다. | 없음 |
+| **`fill`** | 공식 출처와 해당 모델의 지원 근거가 확인됨 | 공식 URL |
+| **`blank`** | 키캡·보호필름처럼 별도 소프트웨어를 연결할 필요가 없는 물품 | 비어 있음 |
+| **`review`** | 모델이 애매하거나 검증 근거가 부족해서 아직 확정할 수 없음 | 비어 있음 |
 
-검색 실패나 후보가 모두 차단된 상황도 `review`입니다. `verified_at`은 페이지/Registry의 검증일입니다. 실행한 날짜로 덮어쓰지 않습니다.
+**`review`는 소프트웨어가 없다는 뜻이 아닙니다.** 검색에 실패했거나 제조사 사이트에 접근할 수 없을 때도 `review`로 남깁니다. URL을 무리하게 채우는 것보다 틀린 링크를 제공하지 않는 편이 낫기 때문입니다.
 
-## 설치와 CLI
+> [!NOTE]
+> **Offline 모드에서 `fill`이 나왔다고 해서 방금 해당 사이트에 접속했다는 뜻은 아닙니다.** 저장된 공식 근거와 `verified_at` 검증일을 바탕으로 판정합니다. 온라인 조사에서만 선택된 페이지를 새로 확인합니다.
 
-Node.js **22 이상**이 필요합니다. 압축을 푼 프로젝트 폴더에서 실행합니다.
+## 직접 실행해 보기
+
+**Node.js 22 이상**이 필요합니다. 처음 설치할 때는 npm 패키지를 내려받기 위한 인터넷 연결이 필요할 수 있지만, 아래 조회 명령은 별도 검색 API 없이 실행합니다.
 
 ```bash
+git clone https://github.com/HoMongYi/hardware-software-url-finder.git
+cd hardware-software-url-finder
 npm ci --ignore-scripts --no-audit --no-fund
-node bin/hsuf.mjs --help
 node bin/hsuf.mjs resolve "[Canon] PIXMA E3470" --offline
-node bin/hsuf.mjs registry validate
 ```
 
-이 문서의 `node bin/hsuf.mjs`는 패키지의 `hsuf` 실행 파일과 같은 코드입니다. npm 패키지를 설치하면 제공되는 `hsuf` 명령으로 바꿔 쓸 수 있습니다. 여기서는 설치 경로나 shell 설정에 영향을 받지 않는 호출을 사용합니다.
+출력은 JSON입니다. 실제 결과에는 여러 필드가 있고, 핵심만 보면 아래와 같습니다.
 
-Canon 예제는 직접 확인한 공식 페이지를 Registry에서 찾아 `fill`을 반환합니다. 등록되지 않은 제품을 억지로 확정하지는 않습니다.
+```json
+{
+  "decision": "fill",
+  "primary": {
+    "url": "https://asia.canon/en/support/PIXMA%20E3470/model",
+    "software_kind": "support"
+  },
+  "verified_at": "2026-10-01"
+}
+```
 
-URL만 검사하려면 다음 명령을 사용합니다. 이 명령은 저장된 Registry/URL 정책을 검사하며 페이지를 새로 가져오지 않습니다. 페이지 근거가 없는 URL은 `review`로 남습니다.
+CSV 파일을 한 번에 처리할 수도 있습니다.
 
 ```bash
-node bin/hsuf.mjs audit "https://asia.canon/en/support/PIXMA%20E3470/model" --name "[Canon] PIXMA E3470"
-```
-
-배포용 tarball을 로컬로 설치한 경우 같은 실행 파일을 `hsuf resolve`, `hsuf audit`, `hsuf registry validate`, `hsuf mcp`, `hsuf serve`로 호출할 수 있습니다. v0.1.0 npm registry publish는 아직 하지 않았으므로 이 문서는 npm registry 설치를 전제로 하지 않습니다.
-
-## CSV와 Offline
-
-CSV는 UTF-8이며 다음 헤더를 사용합니다. `product_name`이 필수이고 나머지는 선택입니다.
-
-```csv
-input_id,product_name,category
-SYNTHETIC-001,[Canon] PIXMA E3470,printer
-SYNTHETIC-002,Synthetic keycap set,accessory
-```
-
-```bash
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline
 node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --output result.csv
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --output legacy.csv --legacy
 ```
 
-출력 파일이 이미 있으면 덮어쓰지 않습니다. 다른 파일명을 쓰세요. 기본 CSV에는 `decision`과 `reason_codes`가 있고, `--legacy`는 `input_id,product_name,url` 세 컬럼만 만듭니다. blank/review의 URL은 빈칸입니다. CSV 수식으로 실행될 수 있는 셀은 이스케이프합니다.
-
-아무 Provider 옵션도 주지 않으면 Offline이 기본입니다. Offline은 외부 DNS·HTTP·LLM을 호출하지 않습니다. 현재 예제 CSV의 결과는 fill 2개, blank 1개, review 1개입니다. 한 번에 최대 1,000행/4 MiB를 처리합니다.
-
-## SerpAPI + OpenAI Judge
-
-```text
-제품 → Registry → 미확정 제품만 SerpAPI
-     → 차단 필터 → 점수제 → 상위 5개
-     → 필요할 때 OpenAI Judge → Core의 독립 페이지 Audit
-```
-
-호스트 환경에 `SERPAPI_API_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL`을 설정합니다. 모델 이름을 코드에 고정하지 않습니다. 자신의 계정에서 사용 가능한 모델 중 비용과 후보 판별 성능을 비교해 선택하세요. 특정 모델 사용을 강제하지 않습니다. `.env.example`은 변수 이름만 제공하며 `.env` 자동 로딩도 하지 않습니다.
+`result.csv`에는 URL뿐 아니라 `decision`과 판정 이유(`reason_codes`)도 기록됩니다. 기존 시스템에 URL 세 열만 전달해야 한다면 `--legacy` 옵션을 사용할 수 있습니다. 다만 이 경우 `blank`와 `review`가 모두 빈 URL로 출력되므로 상태를 별도로 보관하는 편이 좋습니다.
 
 ```bash
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --pipeline serpapi-openai-judge --output researched.csv
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --config examples/serpapi-openai-judge.example.yaml
+node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --legacy --output legacy.csv
 ```
 
-이 명령의 설정 파싱과 Provider 요청/응답은 테스트했습니다. 실제 유료 API 실호출은 **Not run**입니다. 기본 테스트는 실제 SerpAPI/OpenAI Provider 클래스에 가짜 HTTP 응답을 주입합니다. 따라서 키·요금·계정별 모델 사용 가능 여부를 검증했다고 보지는 않습니다.
+**출력 파일은 덮어쓰지 않습니다.** 같은 이름의 파일이 이미 있다면 다른 파일명을 지정해 주세요. Windows에서 실행하는 방법과 CSV 형식은 [처음 사용하기](docs/QUICK_START.md)에 정리했습니다.
 
-Registry hit에는 Judge를 호출하지 않습니다. 후보가 하나면 Core가 바로 검증하고, 공식 후보가 여러 개라 비교가 필요하면 Judge를 씁니다. Judge의 confidence나 추천 URL로 Core의 review를 바꿀 수 없습니다. 점수는 [config/scoring.yaml](config/scoring.yaml), 후보 수는 Pipeline YAML에서 조정합니다. Hard Reject는 점수보다 우선합니다.
+## 모르는 제품은 어떻게 찾나요?
 
-## Gemini · DeepSeek · Qwen · 자체 LLM
+공개 예제는 **SerpAPI로 검색 → 잘못된 후보 제외 → 점수 계산 → 상위 5개 → 필요할 때 OpenAI로 비교 → 마지막으로 Core가 공식 페이지 확인** 순서입니다.
 
-Search와 Judge는 독립 인터페이스입니다. Core에는 LLM SDK가 필요하지 않습니다.
-
-| 종류 | 구현 |
-|---|---|
-| Search | Mock, SerpAPI, Generic HTTP |
-| Judge | Mock, OpenAI Responses, Generic HTTP, Command |
-
-Generic HTTP는 각 업체의 API에 바로 같은 JSON을 보내는 기능이 아닙니다. **자신의 Gateway가 HSUF 계약을 받아 선택한 LLM API로 바꾸는 구조**입니다. `HSUF_SEARCH_ENDPOINT`, `HSUF_JUDGE_ENDPOINT`와 필요한 token 환경변수를 설정합니다. 공개 HTTP(S) endpoint만 사용하며 localhost·사설 IP는 Fetcher가 차단합니다.
-
-```bash
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --config examples/generic-http.example.yaml
-node bin/hsuf.mjs resolve examples/generic-catalog.csv --config examples/command-judge.example.yaml
+```mermaid
+sequenceDiagram
+    participant U as 사용자
+    participant C as HSUF Core
+    participant S as SerpAPI
+    participant J as OpenAI Judge
+    participant W as 공식 웹사이트
+    U->>C: 제품명 전달
+    C->>C: Registry 먼저 확인
+    opt 정확 모델이 아직 확인되지 않았을 때
+        C->>S: 검색 요청
+        S-->>C: URL 후보
+        C->>C: 출처 차단 · 점수 · 상위 5개
+        opt 비교가 필요할 때
+            C->>J: 후보 ID와 요약 전달
+            J-->>C: 후보 ID 선택 또는 review
+        end
+        C->>W: 선택한 페이지 직접 확인
+        W-->>C: 페이지 내용
+    end
+    C-->>U: fill / blank / review
 ```
 
-Command는 지정한 실행 파일에 JSON stdin을 보내고 JSON stdout을 읽습니다. shell을 사용하지 않고 시간·출력 크기를 제한합니다. API 키 환경변수는 자식 프로세스에 자동 전달하지 않습니다. 실제 LLM 연결은 Gateway의 별도 secret store에서 처리하세요. 예제 Command는 항상 review를 반환하며 유료 API를 호출하지 않습니다.
+점수는 **정답 확률이 아닙니다.** 공식 제조사 사이트의 다른 모델 페이지처럼 점수가 높아도 틀릴 수 있는 후보는 마지막 검증에서 걸러집니다. OpenAI도 URL을 새로 만들어 확정하지 않고, 주어진 후보 중 ID를 고르는 역할만 합니다.
 
-Search는 `{ candidates: [{ url, title, snippet }] }`, Judge는 `{ decision: "candidate" 또는 "review", candidate_id, reason_codes, uncertainties }`를 반환합니다. 새 URL을 만들어 반환하면 계약을 통과할 수 없습니다. [Provider 계약](docs/PROVIDERS.md)에 전체 형식이 있습니다.
+[온라인 조사 설정](docs/PROVIDER_RECIPES.md)에는 SerpAPI 키와 OpenAI 모델 설정, 실제 실행 명령이 들어 있습니다. 이 과정은 **외부 API 요금이 발생할 수 있는 선택 기능**입니다.
 
-## Codex와 Claude Code
+## 어떤 환경에서 쓸 수 있나요?
 
-같은 [canonical Skill](skills/hardware-software-url-finder/SKILL.md)을 사용합니다. Skill은 작업 순서를 알려주고 실제 판정은 Core/CLI/MCP가 맡습니다.
-
-Codex의 project Skill 위치는 `.agents/skills/hardware-software-url-finder`, personal 위치는 `~/.agents/skills/hardware-software-url-finder`입니다. Claude Code는 project `.claude/skills/hardware-software-url-finder`, personal `~/.claude/skills/hardware-software-url-finder`를 사용합니다. 해당 폴더에 canonical Skill 디렉터리를 복사하고 `HSUF_HOME`을 이 Core 프로젝트 경로로 설정합니다.
-
-```bash
-node skills/hardware-software-url-finder/scripts/hsuf.mjs resolve "[Canon] PIXMA E3470" --offline
-```
-
-설치 후에는 “hardware-software-url-finder로 이 CSV를 확인하고 애매한 모델은 review로 남겨줘”처럼 요청할 수 있습니다. 공식 `skills-ref` frontmatter 검증과 wrapper 실행은 **Passed**입니다. Codex/Claude Code UI에서 설치 후 자동 선택까지는 **Needs verification**입니다.
-
-Codex Plugin은 canonical Skill에서 빌드합니다.
-
-```bash
-npm run release:build
-```
-
-`dist/hsuf-codex-plugin-v0.1.0.zip`에 root `plugin.json`, `mcp.json`, `skills/`, `runtime/`와 `.codex-plugin/plugin.json` 호환 manifest가 들어 있습니다. 압축을 풀고 `runtime`에서 `npm ci --ignore-scripts --no-audit --no-fund`로 의존성을 설치합니다. Portable manifest와 MCP 설정은 공식 Schema로 검사합니다. **Plugin 설치 UI 자체는 아직 검증하지 않았습니다.**
-
-## OpenAI API와 Claude API
-
-API를 사용하는 호스트는 [examples/agent-api-bridge.mjs](examples/agent-api-bridge.mjs)의 Tool 정의와 handler를 연결할 수 있습니다. OpenAI Responses의 `function_call`은 `handleOpenAI`, Claude의 `tool_use`는 `handleClaude`가 같은 Core를 호출합니다.
-
-```js
-import { handleOpenAI, handleClaude } from './examples/agent-api-bridge.mjs';
-
-const openAIResult = await handleOpenAI({
-  name: 'resolve_hardware_software_url', call_id: 'example-call',
-  arguments: JSON.stringify({ product_name: '[Canon] PIXMA E3470' })
-});
-const claudeResult = await handleClaude({
-  name: 'resolve_hardware_software_url', id: 'example-call',
-  input: { product_name: '[Canon] PIXMA E3470' }
-});
-```
-
-handler와 Tool 결과 형식은 로컬로 실행 확인했습니다. 실제 Messages/Responses 계정 실호출이나 Claude Skill upload는 **Not run**입니다. Claude API의 Skill code-execution container에는 외부 네트워크가 없으므로 Live Research는 호스트의 Custom Tool 또는 MCP에서 실행하세요. Node Core를 그 컨테이너에 설치할 수 있다고 가정하지 않습니다.
-
-## MCP
-
-```bash
-node bin/hsuf.mjs mcp
-```
-
-stdout은 MCP 메시지 전용입니다. MCP host의 stdio command는 `node`, args는 `["/absolute/path/to/hsuf/bin/hsuf.mjs", "mcp"]`로 설정합니다. 기본 MCP에는 다음 read-only Tool 6개가 있습니다.
-
-- `resolve_hardware_software_url`
-- `resolve_hardware_software_urls`
-- `audit_hardware_software_url`
-- `lookup_hardware_vendor`
-- `lookup_software_ecosystem`
-- `get_registry_status`
-
-Structured Output Schema를 제공하며 공식 MCP v2 클라이언트의 실제 stdio 연결로 테스트했습니다. 네트워크 조사가 필요하면 `mcp --pipeline serpapi-openai-judge`로 실행해 별도 `research_hardware_software_url` Tool을 노출합니다. Resolve Tool은 계속 Offline입니다.
-
-## HTTP API
-
-```bash
-node bin/hsuf.mjs serve --port 8787
-```
-
-기본 주소는 `http://127.0.0.1:8787`입니다. 실제 사용한 요청 예시는 다음과 같습니다.
-
-```js
-const response = await fetch('http://127.0.0.1:8787/v1/resolve', {
-  method: 'POST', headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ input_id: 'SYNTHETIC-001', product_name: '[Canon] PIXMA E3470' })
-});
-const result = await response.json();
-```
-
-| Method | 경로 | 입력 |
+| 사용하는 환경 | 연결 방법 | 설명 |
 |---|---|---|
-| GET | `/health` | 없음 |
-| POST | `/v1/resolve` | 제품 한 개 |
-| POST | `/v1/resolve/batch` | `{ "items": [...] }` |
-| POST | `/v1/audit` | `{ "url": "...", "product": { "product_name": "..." } }` |
-| GET | `/v1/vendors/:id` | public Vendor ID |
-| GET | `/v1/ecosystems/:id` | public Ecosystem ID |
+| 터미널·엑셀용 CSV | [CLI / CSV](docs/QUICK_START.md) | 소량·일괄 URL 조회 |
+| Codex·Claude Code | [Agent Skill](docs/AGENTS.md) | “이 CSV 확인해줘”라고 자연어로 요청 |
+| MCP를 지원하는 Agent | [MCP Server](docs/AGENTS.md) | HSUF를 Agent의 Tool로 연결 |
+| 웹서비스·자체 프로그램 | [HTTP API / Node.js](docs/API.md) | 입력을 보내고 JSON 결과 받기 |
+| Gemini·DeepSeek·Qwen 등 | [Provider 연결](docs/PROVIDERS.md) | 별도 Gateway가 HSUF 계약으로 결과 변환 |
+| 상품 DB·ERP를 운영하는 조직 | [연동 가이드](docs/INTEGRATION.md) | 입력/출력 Adapter를 자체 개발 |
 
-모든 기본 route는 Offline입니다. `serve --pipeline serpapi-openai-judge`는 별도 `POST /v1/research`를 켭니다. loopback 밖에 bind하려면 `HSUF_HTTP_TOKEN`이 필요하고 모든 요청에 Bearer 인증을 요구합니다. 브라우저 Origin은 허용하지 않습니다. [API 계약](docs/API.md)에 크기·동시성 제한과 오류 형식이 있습니다.
+같은 검증 규칙을 공유하지만, **어떤 AI든 Skill ZIP을 업로드하기만 하면 자동으로 인터넷 검색이 된다는 뜻은 아닙니다.** Agent마다 도구 실행 및 네트워크 권한이 다릅니다. [Agent 안내](docs/AGENTS.md)에서 설치 방식과 필요한 준비를 구분해 설명합니다.
 
-## 기존 DB에 연결하기
+## 무엇을 주의해서 확인하나요?
 
-```text
-SKU / Product Name → 조직의 Input Adapter → HSUF
-                   → 조직의 Result Adapter → Internal System
-```
+- `ABC`, `ABC V2`, `ABC WiFi`, `ABC D4`는 비슷하다고 자동으로 합치지 않습니다.
+- 쇼핑몰·커뮤니티·비공식 파일 저장소·설치 파일 직접 링크는 고객용 최종 URL로 사용하지 않습니다.
+- 제조사 이름만 등록되어 있다고 그 회사의 모든 제품을 같은 프로그램에 연결하지 않습니다.
+- 프로그램이 중단됐거나 공식 지원 여부가 불분명하다면 `review`로 남깁니다.
+- Amazon·Newegg·Taobao 같은 곳은 브랜드를 **발견**하는 데 활용할 수 있지만, 판매 페이지를 최종 소프트웨어 URL로 쓰지는 않습니다.
 
-Core는 `input_id + product_name + category(optional)`만 알면 됩니다. 회사 DB의 테이블, ERP endpoint, 인증, 저장·운영 배치 방식은 해당 조직 개발팀이 결정합니다. [Integration Guide](docs/INTEGRATION.md)는 이 경계를 설명하고 DB 구조를 가정하지 않는 JavaScript Adapter 예제를 제공합니다.
+자세한 판정 순서는 [그림으로 보는 동작 원리](docs/WORKFLOW.md), 공식 URL을 새로 등록하는 방법은 [Registry 가이드](docs/REGISTRY.md)에 있습니다.
 
-비공개 확정값이 필요하면 같은 Vendor Schema의 파일을 `data/private/`에 두고 `--private data/private`로 명시적으로 켭니다. 이 경로는 Git과 release allowlist에서 제외됩니다. public lookup에는 private 내용을 돌려주지 않습니다.
+## 첫 공개 버전의 범위
 
-## Vendor와 Software Ecosystem 추가
+**v0.1.0**은 범용 엔진과 연결 방식을 처음 공개한 버전입니다. Registry에는 Vendor 정의 51개, 공식 도메인 후보 85개가 있지만, 이 숫자가 곧 자동으로 URL을 찾아낼 수 있는 제품 수를 뜻하지는 않습니다. 공식 근거를 독립적으로 확인한 Exact Model은 2개이고, Software Ecosystem 24개는 `needs-refresh`라 자동 확정하지 않습니다.
 
-`data/public/vendors/<vendor-id>.json`에 공식 도메인, 정확 모델, 호환 모델/제외 목록, lifecycle, 공개 출처와 검증일을 기록합니다. 글로벌·중국 제조사도 같은 형식을 씁니다. 독립적으로 확인한 모델 별칭만 `model_aliases`에 추가하세요.
+기본 CLI·HTTP·MCP와 Mock Provider 테스트는 통과했습니다. **유료 SerpAPI/OpenAI 계정 실호출, Codex/Claude Code 실제 설치 UI 자동 활성화, Claude API Skill 업로드는 별도 검증 대상**입니다. npm 레지스트리에는 게시하지 않았으므로 [GitHub Release](https://github.com/HoMongYi/hardware-software-url-finder/releases/tag/v0.1.0) 또는 소스를 이용해 주세요.
 
-```bash
-node bin/hsuf.mjs registry validate
-node bin/hsuf.mjs registry build
-npm test
-```
+<details>
+<summary>더 자주 묻는 질문</summary>
 
-Schema → conflict 검사 → compile 순서이며 [Registry Guide](docs/REGISTRY.md)에 실험용 Vendor 예제가 있습니다. `active / deprecated / retired / replaced / needs-refresh`와 successor를 지원합니다. HTTP 200만으로 active가 되지는 않습니다.
+**Q. 공식 URL인데 왜 `review`인가요?**
 
-## Marketplace와 보안
+공식 도메인이라도 모델이 다를 수 있고, Registry에 지원 여부가 아직 기록되지 않았을 수 있습니다.
 
-Amazon, Newegg, Taobao/Tmall, JD, AliExpress는 발견용입니다. Final URL로 확정하지 않습니다. 사용자가 제공한 discovery JSON/CSV는 다음처럼 가져올 수 있습니다.
+**Q. AI 없이도 사용할 수 있나요?**
 
-```bash
-node bin/hsuf.mjs discovery import examples/discovery.json
-```
+네. `--offline`은 Registry를 조회하는 데 OpenAI나 SerpAPI 키가 필요하지 않습니다.
 
-SSRF, DNS의 private IP, 리다이렉트, direct binary, prompt injection을 테스트합니다. Fetcher는 12초·1 MiB·최대 4 redirect·제품당 순차 실행이 기본이며 CAPTCHA를 우회하지 않습니다. 보안 경계와 한계는 [SECURITY.md](SECURITY.md)에 있습니다.
+**Q. 우리 회사 상품번호도 사용할 수 있나요?**
 
-## v0.1.0의 현재 한계
+네. CSV의 `input_id`에 SKU나 품목코드를 넣을 수 있습니다. 다만 사내 DB 연결과 결과 저장은 해당 시스템의 개발자가 구현해야 합니다.
 
-기존 v2.2.1 baseline은 104 golden + 4 integrity 테스트가 통과했습니다. 공개 Registry에는 현재 Vendor 51개, 도메인 85개, 규칙 58개, Ecosystem 24개와 독립 검증한 exact record 2개가 있습니다. Ecosystem 24개는 `needs-refresh`이며 아직 자동 fill하지 않습니다. 원본 상품번호 매핑 1,549행과 지역 별칭 31개는 공개 권한/호환 근거가 확인되지 않아 보류했습니다. 원본은 공개 패키지에 없습니다.
+</details>
 
-단순 버전 변경으로 모든 기존 매핑이 “공개 검증 완료”가 됐다고 주장하지 않습니다. 정확한 Registry를 늘리려면 공식 호환 근거를 하나씩 확인해야 합니다. OpenAI Web Search unified adapter는 이번 버전에 넣지 않았습니다. paid Provider 실호출과 Agent host UI 설치는 별도 검증 항목입니다. [GitHub Actions](https://github.com/HoMongYi/hardware-software-url-finder/actions/runs/36897853577)에서 Ubuntu/Windows × Node 22/24의 deterministic 테스트·Registry·패키징·Skill 검증을 모두 통과했습니다.
+오류 제보나 공식 URL 추가는 [Issues](https://github.com/HoMongYi/hardware-software-url-finder/issues)와 [기여 안내](CONTRIBUTING.md)를 참고해 주세요. 보안 문제는 [SECURITY.md](SECURITY.md)에 신고 방법을 적어두었습니다.
 
-```bash
-npm test
-npm run validate
-npm run release:build
-npm run test:live
-```
-
-기본 테스트에는 API key나 외부 네트워크가 필요 없습니다. `test:live`는 `HSUF_RUN_PAID_TESTS=1`과 세 Provider 환경변수가 있을 때만 실행하고, 그렇지 않으면 SKIP합니다. [최종 검증 보고서](reports/FINAL_REPORT.md)에 관찰한 결과와 공개 전 체크리스트를 기록합니다.
-
-새 Vendor나 규칙을 기여하려면 [CONTRIBUTING.md](CONTRIBUTING.md)를 읽어주세요. GitHub 업로드와 Tag/Release 준비는 [공개 가이드](docs/PUBLISHING.md), 이번 버전의 변경 사항은 [CHANGELOG.md](CHANGELOG.md)와 [Release Notes](reports/RELEASE_NOTES_v0.1.0.md)에 정리했습니다.
+이 프로젝트는 개인 오픈소스이며 특정 회사의 공식 서비스가 아닙니다. 코드는 [MIT License](LICENSE)를 따릅니다.

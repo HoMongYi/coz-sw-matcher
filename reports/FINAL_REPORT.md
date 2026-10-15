@@ -170,7 +170,7 @@ ZIP CRC/경로/private 제외 검사 **Passed**. 최종 bytes/hash는 self-refer
 - [ ] 확인된 commit에 v0.1.0 Tag를 만들고 별도 승인으로 Release를 publish한다.
 - [ ] npm publish는 이번 작업 범위에 포함하지 않는다.
 
-공개 절차와 Asset 선택은 docs/PUBLISHING.md를 참고하세요. 실제 GitHub/npm publish는 실행하지 않았습니다.
+공개 절차와 Asset 선택은 docs/RELEASES.md를 참고하세요. 실제 GitHub/npm publish는 실행하지 않았습니다.
 
 ## GitHub deployment verification — 2026-10-02
 

@@ -1,37 +1,149 @@
-# CLI / HTTP / MCP contracts
+# 프로그램에서 HSUF 사용하기 — CLI, HTTP API, MCP
 
-All surfaces call the same Core. Generic input is input_id (optional string), product_name (required string, 1–1000 characters), category (optional) and metadata (optional object). Unknown root fields are rejected by Core. No company product number, schema or authentication is required.
+제품 하나를 확인하는 데는 CLI면 충분합니다. 별도 웹서비스나 자동화 프로그램에 붙이려면 **HTTP API 또는 MCP**를 사용할 수 있습니다. 어떤 방식이든 같은 Core 판정을 받습니다.
 
-Result schema is [../schemas/result.schema.json](../schemas/result.schema.json). primary is null unless fill. URLs are never exported for blank/review. Source verification dates can be null and are not regenerated at invocation time.
+```mermaid
+flowchart TD
+  A["제품명 / 상품 목록"] --> B{"연결 방식"}
+  B -->|터미널·배치| C["CLI"]
+  B -->|앱·웹서비스| D["HTTP API"]
+  B -->|AI Agent| E["MCP Tool"]
+  C --> F["공통 HSUF Core"]
+  D --> F
+  E --> F
+  F --> G["fill / blank / review"]
+```
 
-## CLI
+## 공통 입력
 
-`node bin/hsuf.mjs resolve NAME` defaults to offline. A `.csv` argument is treated as a file. CSV supports UTF-8 BOM, standard quoting and multiline cells; max 1000 records, 4 MiB, 64 KiB per record. Header columns may be input_id, product_name, category. Output paths must not already exist.
+`product_name`은 필수이고, `input_id`와 `category`, `metadata`는 선택입니다.
 
-`--private DIR` explicitly loads a vendor-shaped overlay. `--config FILE` accepts bounded YAML and `--pipeline serpapi-openai-judge` uses the shipped example. `--offline` always takes precedence. Invalid arguments or parse failures exit with code 2 and a redacted fixed message; a valid review is exit 0.
+```json
+{
+  "input_id": "SKU-001",
+  "product_name": "[Canon] PIXMA E3470",
+  "category": "printer"
+}
+```
 
-## HTTP
+`input_id`는 소속 회사의 SKU, CSV 행 번호, 자체 UUID를 넣어도 됩니다. HSUF는 이 값을 제품명이나 검색 근거로 해석하지 않고 결과에서 다시 돌려줍니다. 알 수 없는 최상위 입력 필드는 거절합니다.
 
-Start `node bin/hsuf.mjs serve --port 8787`. Requests/response JSON are UTF-8; max body 1 MiB. All base routes are offline even when the optional research provider is enabled.
+결과 객체에는 `decision`, `primary`, `secondary`, `reason_codes`, `evidence`, `verified_at`이 포함됩니다. [JSON Schema](../schemas/result.schema.json)에서 정확한 형식을 확인할 수 있습니다.
 
-| Route | Response |
+## 1. CLI — 가장 쉬운 시작
+
+```bash
+node bin/hsuf.mjs resolve "[Canon] PIXMA E3470" --offline
+node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --output result.csv
+node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --legacy --output legacy.csv
+node bin/hsuf.mjs registry validate
+```
+
+`--legacy` CSV는 `input_id,product_name,url` 세 열만 만듭니다. `blank`와 `review` 모두 URL 칸이 비어 있으므로 이 구분이 필요하면 기본 CSV 결과를 사용하세요.
+
+`--config FILE`로 파이프라인 YAML을 지정하거나 `--pipeline serpapi-openai-judge`를 사용할 수 있습니다. 둘 다 지정하지 않으면 기본 Offline이며, `--offline`을 함께 주면 Pipeline 설정이 있어도 외부 조사를 실행하지 않습니다.
+
+입력 CSV는 UTF-8(BOM 허용), **최대 1,000행 / 4 MiB**입니다. 기존 출력 파일을 덮어쓰지 않습니다. 잘못된 인자/파싱 실패는 종료 코드 2로 처리하며, 단순 `review`는 오류 종료가 아닙니다.
+
+조회 외에 다음 명령도 제공합니다.
+
+```bash
+node bin/hsuf.mjs audit "https://asia.canon/en/support/PIXMA%20E3470/model" --name "[Canon] PIXMA E3470"
+node bin/hsuf.mjs registry build
+node bin/hsuf.mjs discovery import examples/discovery.json
+```
+
+`audit`은 페이지를 가져오지 않는 정적 검사이며, 결과는 `verdict: pass | review` 형식입니다. `registry build`는 Registry 검증 후 `data/public/registry.compiled.json`을 생성하므로 [Registry 기여 작업](REGISTRY.md)에서 사용합니다. `discovery import`는 JSON/CSV의 `product_name`과 `discovery_url`을 읽어 발견용 후보로 정리합니다. 쇼핑몰을 접속하거나 Registry에 등록하지 않으며, `final_url`은 항상 `null`입니다.
+
+## 2. HTTP API — 다른 프로그램에서 호출
+
+서버 실행:
+
+```bash
+node bin/hsuf.mjs serve --port 8787
+```
+
+기본 주소는 `http://127.0.0.1:8787`입니다. 별도의 서버 설치나 DB가 필요하지 않습니다.
+
+**curl 요청 예시:**
+
+```bash
+curl -X POST http://127.0.0.1:8787/v1/resolve \
+  -H "Content-Type: application/json" \
+  -d '{"input_id":"SKU-001","product_name":"[Canon] PIXMA E3470"}'
+```
+
+PowerShell에서는 JavaScript `fetch` 예제가 셸의 인용 규칙 차이를 피하는 데 편할 수 있습니다.
+
+```js
+const response = await fetch('http://127.0.0.1:8787/v1/resolve', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ input_id: 'SKU-001', product_name: '[Canon] PIXMA E3470' })
+});
+console.log(await response.json());
+```
+
+### 엔드포인트
+
+| 요청 | 경로 | 용도 |
+|---|---|---|
+| `GET` | `/health` | 서버 상태 / 버전 |
+| `POST` | `/v1/resolve` | 제품 1개 Offline 조회 |
+| `POST` | `/v1/resolve/batch` | `{ "items": [...] }` 배열을 Offline 일괄 판정 |
+| `POST` | `/v1/audit` | `{ "url": "...", "product": {"product_name":"..."} }` 정적 감사 |
+| `GET` | `/v1/vendors/:id` | 공개 Vendor 조회 |
+| `GET` | `/v1/ecosystems/:id` | 공개 Ecosystem 조회 |
+| `POST` | `/v1/research` | 온라인 Provider를 서버 시작 시 설정한 경우에만 사용 |
+
+> [!IMPORTANT]
+> 서버가 온라인 Pipeline으로 시작되었더라도 **기본 `/v1/resolve`와 `/v1/resolve/batch`는 Offline**입니다. 외부 API 요금이 발생할 수 있는 온라인 조사는 별도 `/v1/research`에서 실행합니다.
+
+온라인 조사 기능을 별도로 켜려면:
+
+```bash
+node bin/hsuf.mjs serve --port 8787 --pipeline serpapi-openai-judge
+```
+
+요청 본문 최대 **1 MiB**, 배치 최대 **1,000개**, 동시 요청 기본 **2개**입니다. 오류는 민감정보를 포함하지 않는 `error` 코드로 응답하며, 대표적으로 `INVALID_REQUEST`(400), `UNAUTHORIZED`(401), `BODY_TOO_LARGE`(413), `BUSY`(429)가 있습니다.
+
+외부 네트워크 인터페이스에 서버를 열려면 `HSUF_HTTP_TOKEN` 등 인증 설정이 필요합니다. **공개 인터넷 서비스로 사용할 때 TLS/Reverse Proxy/Rate Limit/접근 제어까지 자동으로 제공되는 제품은 아닙니다.** 운영 환경 보안은 구축하는 조직의 책임입니다. [보안 문서](../SECURITY.md)를 확인하세요.
+
+## 3. MCP — AI Agent용 도구
+
+```bash
+node bin/hsuf.mjs mcp
+```
+
+MCP는 터미널 화면에 결과를 출력하는 일반 프로그램이 아닙니다. **MCP 클라이언트와 표준 입출력(stdio)으로 통신**하므로 Agent에서 서버를 실행하도록 연결해야 합니다.
+
+기본 Tool은 다음 6개입니다.
+
+| Tool | 하는 일 |
 |---|---|
-| GET /health | status, version, mode |
-| POST /v1/resolve | Core result |
-| POST /v1/resolve/batch | `{ "results": [CoreResult] }` |
-| POST /v1/audit | static audit verdict, reason_codes, sanitized/final URL, verified_at, locale |
-| GET /v1/vendors/:id | public vendor record; 404 if absent |
-| GET /v1/ecosystems/:id | public ecosystem; 404 if absent |
-| POST /v1/research | optional, explicitly enabled by server configuration; Core result |
+| `resolve_hardware_software_url` | 제품 하나 조회 |
+| `resolve_hardware_software_urls` | 제품 여러 개 조회 |
+| `audit_hardware_software_url` | 특정 후보 URL 검사 |
+| `lookup_hardware_vendor` | 공개 제조사 Registry 정보 |
+| `lookup_software_ecosystem` | 공개 소프트웨어 생태계 정보 |
+| `get_registry_status` | Registry 상태·버전 |
 
-Batch input is `{ "items": [GenericInput] }`. Audit input is `{ "url": "https://...", "product": GenericInput }`. With no product, static audit defaults to unknown and cannot fill. Metadata is never interpreted as provider settings, evidence or an override.
+온라인 조사 옵션을 주면 별도 `research_hardware_software_url` Tool이 생깁니다. 기본 조회 Tool은 그대로 Offline입니다. → [Agent Skill/MCP 설정 예제](AGENTS.md)
 
-Fixed errors: 400 INVALID_REQUEST/INVALID_JSON, 401 UNAUTHORIZED, 403 ORIGIN_NOT_ALLOWED/HOST_NOT_ALLOWED, 404 NOT_FOUND, 413 BODY_TOO_LARGE, 415 JSON_REQUIRED, 429 BUSY. Error output never includes provider exceptions, input records or auth values. Bearer token required for binding outside loopback; request Origin rejected. Organisation developers own TLS/proxy/access policy.
+## API와 HSUF의 경계
 
-## MCP
+```mermaid
+sequenceDiagram
+    participant C as 회사 앱 / 자동화
+    participant A as HSUF API
+    participant E as Core Engine
+    C->>A: 제품 식별자 + 제품명
+    A->>E: 정규화·Registry 조회·감사
+    E-->>A: decision·URL·사유
+    A-->>C: JSON 결과
+    Note over C: DB 저장·권한·검수 여부는 앱이 결정
+```
 
-MCP v2 stable SDK 2.2.0, protocol 2026-07-28. Command: `node`; args: absolute Core bin path + `mcp`. Official client tests verify listTools and callTool over in-memory and actual stdio transports. All tools return structuredContent plus its serialized text; outputSchema and readOnlyHint are registered.
+HSUF는 어떤 DB에 결과를 저장할지 결정하거나 사내 인증·ERP 연동을 구현하지 않습니다. → [조직 연동 문서](INTEGRATION.md)
 
-Six base tool names are listed in README. Single resolve takes GenericInput; batch takes items; audit takes url/product; lookup takes id; registry status takes no args. Private vendor/model records are not returned by public lookup/status.
-
-`mcp --pipeline serpapi-openai-judge` exposes research_hardware_software_url separately with openWorldHint true. This can make paid requests; the host must make that distinction visible. Offline resolve remains offline.
+[← 문서 길잡이](README.md) · [5분 시작하기](QUICK_START.md) · [Provider 계약](PROVIDERS.md)

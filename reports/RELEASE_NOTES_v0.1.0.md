@@ -1,45 +1,45 @@
 # Hardware Software URL Finder v0.1.0
 
-First public release · MIT License · Tag: `v0.1.0`
+**처음 공개하는 버전입니다.** PC 부품과 주변기기의 제품명으로 공식 드라이버·설정 프로그램·지원 페이지를 찾고, 그 URL이 실제로 해당 모델에 맞는지 확인할 수 있습니다.
 
-제품 이름이나 CSV에서 공식 드라이버·설정 프로그램 URL을 찾아 `fill / blank / review`로 돌려주는 범용 엔진입니다. 실제 PC 유통·고객지원 업무의 반복적인 URL 확인 문제에서 시작한 개인 오픈소스 프로젝트이며, 특정 회사의 공식 제품이 아닙니다.
+검색 결과의 첫 번째 링크를 그대로 쓰지 않습니다. 먼저 확인된 Registry를 살펴보고, 모르는 제품은 필요할 때 검색한 뒤 공식 사이트·모델·지원 근거를 다시 검사합니다. 확인되지 않은 항목은 임의로 채우지 않고 `review`로 남깁니다.
 
-## 포함된 기능
+## 무엇이 들어 있나요?
 
-- Registry 우선 Offline Core와 정확 모델·리비전·SKU 보호
-- Public Registry와 선택적인 Private Overlay 분리
-- 독립 URL/page Audit, Lifecycle과 공식 출처 확인
-- Hard filter → Candidate Scoring → Top 5 → Judge → Core Audit
-- SerpAPI Search, OpenAI Responses Judge, Mock 및 Generic HTTP/Command Provider
-- 환경변수 `OPENAI_MODEL`로 Judge 모델 선택
-- CLI·CSV·legacy export, 로컬 HTTP API, MCP
-- Codex/Claude Code 공통 Agent Skill과 Codex Plugin 패키지
-- 조직별 Input/Result Adapter 가이드
+- **제품 하나 또는 CSV 파일 조회:** `fill`(공식 URL), `blank`(소프트웨어 불필요), `review`(확인 필요)로 구분합니다.
+- **Registry 우선 사용:** 이미 확인한 제품은 불필요하게 검색하거나 LLM을 다시 호출하지 않습니다.
+- **SerpAPI + OpenAI Judge 예제:** 검색 후보를 필터링·점수화하고, 여러 후보가 있을 때만 AI가 비교합니다. 최종 판정은 HSUF Core가 담당합니다.
+- **연결 방법:** CLI, HTTP API, MCP, Codex·Claude Code용 Agent Skill, Codex Plugin을 제공합니다.
+- **다른 서비스에서 활용:** Gemini·DeepSeek·Qwen 등은 Generic HTTP/Command Provider 계약에 맞춘 별도 Gateway로 연결할 수 있습니다.
+- **공개 데이터와 조직별 데이터 분리:** 특정 쇼핑몰의 상품 DB나 ERP가 없어도 설치·사용할 수 있습니다.
 
-HSUF는 조직의 DB Schema, ERP API나 인증 방식을 정의하지 않습니다. LLM의 URL 추천만으로 fill을 확정하지 않습니다. Marketplace는 discovery-only입니다.
+## 먼저 사용해 보기
 
-## Registry 범위와 한계
+Node.js 22 이상이 필요합니다. 소스를 내려받아 압축을 풀거나 저장소를 clone한 뒤 실행하세요.
 
-Vendor 51개, 도메인 후보 85개, 규칙 58개, Software Ecosystem 24개, active exact model 2개, public alias 0개입니다.
+```bash
+npm ci --ignore-scripts --no-audit --no-fund
+node bin/hsuf.mjs resolve "[Canon] PIXMA E3470" --offline
+```
 
-active exact model은 ASUS PRIME A520M-K ARGB와 Canon PIXMA E3470입니다. 기존 공개 제조사 페이지 검증일은 2026-10-01이며 이번 공개 마무리 작업에서 날짜를 새 검증일로 바꾸지 않았습니다. Ecosystem 24개는 needs-refresh이고 공식 페이지 후보 8개는 추가 확인이 필요합니다. 이 항목들은 Offline 자동 fill 대상으로 올리지 않았습니다.
+다양한 사용법은 [README](https://github.com/HoMongYi/hardware-software-url-finder#readme)와 [처음 실행하기](https://github.com/HoMongYi/hardware-software-url-finder/blob/main/docs/QUICK_START.md)에서 볼 수 있습니다.
 
-회사 confirmed mapping 1,549행과 별칭 31개는 공개 근거 부족으로 제외했습니다. 원본 회사 CSV, Private Overlay, credentials와 개발용 캐시는 Release에 없습니다.
+## 현재 확인된 범위
 
-## 검증
+등록된 Vendor 정의는 51개, 도메인 후보는 85개입니다. 이 가운데 공식 출처를 확인해 자동 `fill`할 수 있는 Exact Model은 2개이며, Software Ecosystem 24개는 `needs-refresh`로 두었습니다. **이 숫자를 곧바로 지원 모델 수로 이해하면 안 됩니다.**
 
-최종 합계는 **238 PASS / 0 FAIL / 3 SKIP**입니다. 원본 golden 104 + integrity 4, 공개 deterministic 130이며 유료 3개는 실행 조건이 없어 SKIP했습니다. 최종 실행 결과는 [FINAL_REPORT](https://github.com/HoMongYi/hardware-software-url-finder/blob/v0.1.0/reports/FINAL_REPORT.md)와 [verification.json](https://github.com/HoMongYi/hardware-software-url-finder/blob/v0.1.0/reports/verification.json)을 참고하세요. CLI/CSV/HTTP/MCP와 Provider Mock/Contract 테스트, 공개 파일·secret 검사, ZIP CRC 및 SHA-256를 확인했습니다.
+유료 SerpAPI/OpenAI 실제 계정 호출과 Agent 호스트 설치 UI, Claude API Skill 업로드는 릴리즈 시점에 검증하지 않았습니다. 기본 CLI·Registry·HTTP·MCP 동작과 Provider Mock/Contract 테스트는 검증했습니다. npm 레지스트리에는 게시하지 않았습니다.
 
-실제 유료 SerpAPI/OpenAI 호출, Claude API Skill Upload, Codex/Claude UI 설치는 **Not run — credentials/environment not available**입니다. [GitHub Hosted CI](https://github.com/HoMongYi/hardware-software-url-finder/actions/runs/36897853577)의 Ubuntu/Windows × Node 22/24 네 조합은 모두 **Passed**입니다. 각 조합에서 deterministic 130개와 Registry·Release Packaging·Skill 검증을 통과했습니다. 최초 Node 22 테스트 옵션 오류는 호환되는 테스트 실행 명령으로 수정했습니다.
+## 파일 선택
 
-## Release Assets
+| 파일 | 용도 |
+|---|---|
+| `hardware-software-url-finder-v0.1.0-source.zip` | 공개 소스 묶음 |
+| `hsuf-agent-skill-v0.1.0.zip` | Agent Skill |
+| `hsuf-codex-plugin-v0.1.0.zip` | Codex Plugin |
+| `hardware-software-url-finder-0.1.0.tgz` | npm 형식의 로컬 설치 패키지 |
+| `SHA256SUMS.txt` · `release-manifest.json` | 파일 크기·해시 대조 |
 
-- hsuf-agent-skill-v0.1.0.zip
-- hsuf-codex-plugin-v0.1.0.zip
-- hardware-software-url-finder-0.1.0.tgz — 로컬 설치용; npm registry publish는 하지 않음
-- SHA256SUMS.txt
-- release-manifest.json
+GitHub가 자동 생성한 Source ZIP/TAR는 별도로 빌드한 Source ZIP과 바이트·해시가 다를 수 있습니다. 파일을 직접 검증할 때는 `SHA256SUMS.txt`에 적힌 **동일한 이름의 배포 파일**을 기준으로 확인하세요.
 
-GitHub는 Tag에서 Source Code ZIP/TAR를 자동 생성합니다. 자체 `hardware-software-url-finder-v0.1.0-source.zip`은 root가 평탄하고 공개 allowlist와 해시가 검증된 선택 Asset입니다. 전체 SHA256SUMS 검증을 위해 함께 첨부할 수 있습니다. GitHub 자동 Source 압축파일과 자체 ZIP의 해시는 같지 않습니다.
-
-Node.js 22 이상이 필요합니다. 설치와 사용법은 repository README를 참고하세요.
+코드는 **MIT License**로 공개합니다. 특정 회사의 공식 서비스가 아니며, 회사 내부 상품 DB나 고객 정보는 포함하지 않습니다.
