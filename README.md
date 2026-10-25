@@ -8,7 +8,7 @@
 
 PC 부품과 주변기기 모두 대상으로 하며, 특정 쇼핑몰의 상품번호나 사내 시스템이 없어도 사용할 수 있습니다. **Node.js CLI**, **CSV**, **Codex/Claude Code용 Agent Skill**, **MCP**, **HTTP API**를 제공합니다.
 
-**[바로 사용해 보기](docs/QUICK_START.md)** · [AI Agent에 연결](docs/AGENTS.md) · [SerpAPI + OpenAI 설정](docs/PROVIDER_RECIPES.md) · [문서 모음](docs/README.md) · [v0.1.0 다운로드](https://github.com/HoMongYi/hardware-software-url-finder/releases/tag/v0.1.0)
+**[바로 사용해 보기](docs/quick-start.md)** · [AI Agent에 연결](docs/AGENTS.md) · [SerpAPI + OpenAI 설정](docs/provider-recipes.md) · [문서 모음](docs/README.md) · [v0.1.0 다운로드](https://github.com/HoMongYi/hardware-software-url-finder/releases/tag/v0.1.0)
 
 ## 제품명 하나를 넣으면
 
@@ -93,7 +93,7 @@ node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --output result
 node bin/hsuf.mjs resolve examples/generic-catalog.csv --offline --legacy --output legacy.csv
 ```
 
-**출력 파일은 덮어쓰지 않습니다.** 같은 이름의 파일이 이미 있다면 다른 파일명을 지정해 주세요. Windows에서 실행하는 방법과 CSV 형식은 [처음 사용하기](docs/QUICK_START.md)에 정리했습니다.
+**출력 파일은 덮어쓰지 않습니다.** 같은 이름의 파일이 이미 있다면 다른 파일명을 지정해 주세요. Windows에서 실행하는 방법과 CSV 형식은 [처음 사용하기](docs/quick-start.md)에 정리했습니다.
 
 ## 모르는 제품은 어떻게 찾나요?
 
@@ -124,18 +124,18 @@ sequenceDiagram
 
 점수는 **정답 확률이 아닙니다.** 공식 제조사 사이트의 다른 모델 페이지처럼 점수가 높아도 틀릴 수 있는 후보는 마지막 검증에서 걸러집니다. OpenAI도 URL을 새로 만들어 확정하지 않고, 주어진 후보 중 ID를 고르는 역할만 합니다.
 
-[온라인 조사 설정](docs/PROVIDER_RECIPES.md)에는 SerpAPI 키와 OpenAI 모델 설정, 실제 실행 명령이 들어 있습니다. 이 과정은 **외부 API 요금이 발생할 수 있는 선택 기능**입니다.
+[온라인 조사 설정](docs/provider-recipes.md)에는 SerpAPI 키와 OpenAI 모델 설정, 실제 실행 명령이 들어 있습니다. 이 과정은 **외부 API 요금이 발생할 수 있는 선택 기능**입니다.
 
 ## 어떤 환경에서 쓸 수 있나요?
 
 | 사용하는 환경 | 연결 방법 | 설명 |
 |---|---|---|
-| 터미널·엑셀용 CSV | [CLI / CSV](docs/QUICK_START.md) | 소량·일괄 URL 조회 |
+| 터미널·엑셀용 CSV | [CLI / CSV](docs/quick-start.md) | 소량·일괄 URL 조회 |
 | Codex·Claude Code | [Agent Skill](docs/AGENTS.md) | “이 CSV 확인해줘”라고 자연어로 요청 |
 | MCP를 지원하는 Agent | [MCP Server](docs/AGENTS.md) | HSUF를 Agent의 Tool로 연결 |
-| 웹서비스·자체 프로그램 | [HTTP API / Node.js](docs/API.md) | 입력을 보내고 JSON 결과 받기 |
-| Gemini·DeepSeek·Qwen 등 | [Provider 연결](docs/PROVIDERS.md) | 별도 Gateway가 HSUF 계약으로 결과 변환 |
-| 상품 DB·ERP를 운영하는 조직 | [연동 가이드](docs/INTEGRATION.md) | 입력/출력 Adapter를 자체 개발 |
+| 웹서비스·자체 프로그램 | [HTTP API / Node.js](docs/api.md) | 입력을 보내고 JSON 결과 받기 |
+| Gemini·DeepSeek·Qwen 등 | [Provider 연결](docs/providers.md) | 별도 Gateway가 HSUF 계약으로 결과 변환 |
+| 상품 DB·ERP를 운영하는 조직 | [연동 가이드](docs/integration.md) | 입력/출력 Adapter를 자체 개발 |
 
 같은 검증 규칙을 공유하지만, **어떤 AI든 Skill ZIP을 업로드하기만 하면 자동으로 인터넷 검색이 된다는 뜻은 아닙니다.** Agent마다 도구 실행 및 네트워크 권한이 다릅니다. [Agent 안내](docs/AGENTS.md)에서 설치 방식과 필요한 준비를 구분해 설명합니다.
 
@@ -147,7 +147,7 @@ sequenceDiagram
 - 프로그램이 중단됐거나 공식 지원 여부가 불분명하다면 `review`로 남깁니다.
 - Amazon·Newegg·Taobao 같은 곳은 브랜드를 **발견**하는 데 활용할 수 있지만, 판매 페이지를 최종 소프트웨어 URL로 쓰지는 않습니다.
 
-자세한 판정 순서는 [그림으로 보는 동작 원리](docs/WORKFLOW.md), 공식 URL을 새로 등록하는 방법은 [Registry 가이드](docs/REGISTRY.md)에 있습니다.
+자세한 판정 순서는 [그림으로 보는 동작 원리](docs/workflow.md), 공식 URL을 새로 등록하는 방법은 [Registry 가이드](docs/registry.md)에 있습니다.
 
 ## 첫 공개 버전의 범위
 

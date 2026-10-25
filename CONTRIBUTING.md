@@ -41,7 +41,7 @@ npm run validate
 
 ## Vendor·Software Ecosystem을 추가할 때
 
-1. 먼저 [`docs/REGISTRY.md`](docs/REGISTRY.md)에서 데이터 구조를 확인합니다.
+1. 먼저 [`docs/registry.md`](docs/registry.md)에서 데이터 구조를 확인합니다.
 2. 공식 제조사 사이트와 **정확 모델/리비전**의 지원 근거를 찾습니다.
 3. `data/public/vendors/<id>.json`에서 `provenance`, 실제 `verified_at`, 호환 목록/제외 목록을 기록합니다.
 4. 확인되지 않은 정보는 `needs-refresh`로 두고 자동 `fill`을 허용하지 않습니다.

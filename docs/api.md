@@ -53,7 +53,7 @@ node bin/hsuf.mjs registry build
 node bin/hsuf.mjs discovery import examples/discovery.json
 ```
 
-`audit`은 페이지를 가져오지 않는 정적 검사이며, 결과는 `verdict: pass | review` 형식입니다. `registry build`는 Registry 검증 후 `data/public/registry.compiled.json`을 생성하므로 [Registry 기여 작업](REGISTRY.md)에서 사용합니다. `discovery import`는 JSON/CSV의 `product_name`과 `discovery_url`을 읽어 발견용 후보로 정리합니다. 쇼핑몰을 접속하거나 Registry에 등록하지 않으며, `final_url`은 항상 `null`입니다.
+`audit`은 페이지를 가져오지 않는 정적 검사이며, 결과는 `verdict: pass | review` 형식입니다. `registry build`는 Registry 검증 후 `data/public/registry.compiled.json`을 생성하므로 [Registry 기여 작업](registry.md)에서 사용합니다. `discovery import`는 JSON/CSV의 `product_name`과 `discovery_url`을 읽어 발견용 후보로 정리합니다. 쇼핑몰을 접속하거나 Registry에 등록하지 않으며, `final_url`은 항상 `null`입니다.
 
 ## 2. HTTP API — 다른 프로그램에서 호출
 
@@ -144,6 +144,6 @@ sequenceDiagram
     Note over C: DB 저장·권한·검수 여부는 앱이 결정
 ```
 
-HSUF는 어떤 DB에 결과를 저장할지 결정하거나 사내 인증·ERP 연동을 구현하지 않습니다. → [조직 연동 문서](INTEGRATION.md)
+HSUF는 어떤 DB에 결과를 저장할지 결정하거나 사내 인증·ERP 연동을 구현하지 않습니다. → [조직 연동 문서](integration.md)
 
-[← 문서 길잡이](README.md) · [5분 시작하기](QUICK_START.md) · [Provider 계약](PROVIDERS.md)
+[← 문서 길잡이](README.md) · [5분 시작하기](quick-start.md) · [Provider 계약](providers.md)

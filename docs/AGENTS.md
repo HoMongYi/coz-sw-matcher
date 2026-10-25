@@ -20,7 +20,7 @@ flowchart LR
 
 ## 1. Codex에서 사용하기
 
-먼저 프로젝트를 준비합니다. [처음 시작하기](QUICK_START.md)에서 Node.js 설치와 `npm ci`까지 확인하세요.
+먼저 프로젝트를 준비합니다. [처음 시작하기](quick-start.md)에서 Node.js 설치와 `npm ci`까지 확인하세요.
 
 Canonical Skill 폴더는 저장소의 아래 위치에 있습니다.
 
@@ -152,4 +152,4 @@ Claude API의 Skill code-execution 컨테이너에서는 외부 네트워크 접
 
 > HSUF를 사용해서 `products.csv`의 공식 소프트웨어 URL을 찾아줘. 우선 Offline으로 처리하고, Registry에서 확인되지 않은 제품은 온라인 조사 여부를 별도로 표시해줘. 모델명이 비슷하다는 이유로 합치지 말고 `fill/blank/review`와 근거를 포함해 줘. 원본은 유지해줘.
 
-[← 문서 길잡이](README.md) · [MCP·HTTP 규격](API.md) · [온라인 조사 설정](PROVIDER_RECIPES.md)
+[← 문서 길잡이](README.md) · [MCP·HTTP 규격](api.md) · [온라인 조사 설정](provider-recipes.md)

@@ -101,4 +101,4 @@ npm run validate
 
 숫자는 **지원 제품 수**나 **URL 품질 점수**를 뜻하지 않습니다. 공개 레지스트리를 키우려면 공식 출처와 호환 모델을 하나씩 확인해야 합니다.
 
-[← 문서 길잡이](README.md) · [기여 안내](../CONTRIBUTING.md) · [공식 자료와 검증 기준](OFFICIAL_SOURCES.md)
+[← 문서 길잡이](README.md) · [기여 안내](../CONTRIBUTING.md) · [공식 자료와 검증 기준](official-sources.md)

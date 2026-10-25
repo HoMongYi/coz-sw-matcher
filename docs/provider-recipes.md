@@ -19,12 +19,12 @@ flowchart LR
 
 ## 준비물
 
-- [처음 시작하기](QUICK_START.md)에 따라 HSUF 설치
+- [처음 시작하기](quick-start.md)에 따라 HSUF 설치
 - SerpAPI 계정의 API Key
 - OpenAI API Key와 **본인 계정에서 실제 사용할 수 있는 모델 ID**
 - 외부 API 사용에 따른 비용을 감수할 수 있는 환경
 
-**온라인 검색이 작동하려면 제조사가 Registry에서 식별되고 공식 도메인 정보도 있어야 합니다.** 제조사 자체가 미등록인 제품은 검색 Provider를 설정해도 곧바로 조사하지 못하고 `review`가 될 수 있습니다. 공식 도메인을 먼저 검증해 Registry에 등록하는 절차는 [Registry 안내](REGISTRY.md)를 참고하세요.
+**온라인 검색이 작동하려면 제조사가 Registry에서 식별되고 공식 도메인 정보도 있어야 합니다.** 제조사 자체가 미등록인 제품은 검색 Provider를 설정해도 곧바로 조사하지 못하고 `review`가 될 수 있습니다. 공식 도메인을 먼저 검증해 Registry에 등록하는 절차는 [Registry 안내](registry.md)를 참고하세요.
 
 기본 Offline 모드에는 위 키가 필요하지 않습니다. **유료 Provider의 실제 계정 호출은 프로젝트 v0.1.0 릴리즈 테스트에서 실행되지 않았습니다.** 설정과 입출력 계약은 테스트되어 있지만 실제 사용 전에 소량 샘플로 점검하는 것을 권장합니다.
 
@@ -113,4 +113,4 @@ Judge가 호출되면 제품 모델명과 후보의 ID·URL·제목·점수 등�
 
 Provider 오류는 `blank`가 아닙니다. **검증 실패를 '별도 소프트웨어가 없음'으로 해석하지 마세요.**
 
-[← 전체 문서](README.md) · [고급 Provider 계약](PROVIDERS.md) · [판정 원리](WORKFLOW.md)
+[← 전체 문서](README.md) · [고급 Provider 계약](providers.md) · [판정 원리](workflow.md)

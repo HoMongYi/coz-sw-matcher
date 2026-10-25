@@ -123,4 +123,4 @@ stateDiagram-v2
 
 실제로는 `reason_codes`, `evidence`, `verified_at`을 결과와 함께 반환합니다. 업무용 시스템은 URL뿐 아니라 **상태와 이유도 함께 보관**하는 편이 좋습니다.
 
-[← 전체 문서](README.md) · [검색 + LLM 예제](PROVIDER_RECIPES.md) · [Registry 알아보기](REGISTRY.md)
+[← 전체 문서](README.md) · [검색 + LLM 예제](provider-recipes.md) · [Registry 알아보기](registry.md)

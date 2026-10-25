@@ -22,4 +22,4 @@
 
 유료 SerpAPI/OpenAI 실제 계정 호출, Agent 호스트 설치 화면, Claude API Skill 업로드는 릴리즈 시점에 별도 검증하지 않았습니다. npm 레지스트리에도 아직 게시하지 않았습니다.
 
-자세한 사용법은 [README](README.md), 배포 파일 안내는 [Releases](docs/RELEASES.md)를 참고해 주세요.
+자세한 사용법은 [README](README.md), 배포 파일 안내는 [Releases](docs/releases.md)를 참고해 주세요.

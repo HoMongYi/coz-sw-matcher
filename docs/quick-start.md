@@ -98,7 +98,7 @@ CSV 한 번에 **최대 1,000행 / 4 MiB**까지 처리합니다. 더 큰 파일
 node bin/hsuf.mjs audit "https://www.asus.com/motherboards-components/motherboards/prime/prime-a520m-k-argb/helpdesk_download?model2Name=PRIME-A520M-K-ARGB" --name "[ASUS] PRIME A520M-K ARGB"
 ```
 
-이 명령은 URL 모양·도메인·모델 정책을 **정적으로 감사**합니다. 웹페이지를 다시 읽지 않으므로, 새로운 페이지 근거 없이 `review`가 나오더라도 이상한 동작이 아닙니다. 실제 페이지를 가져와 분석하는 것은 [온라인 조사 Pipeline](PROVIDER_RECIPES.md)의 역할입니다.
+이 명령은 URL 모양·도메인·모델 정책을 **정적으로 감사**합니다. 웹페이지를 다시 읽지 않으므로, 새로운 페이지 근거 없이 `review`가 나오더라도 이상한 동작이 아닙니다. 실제 페이지를 가져와 분석하는 것은 [온라인 조사 Pipeline](provider-recipes.md)의 역할입니다.
 
 ## Windows PowerShell에서 API 키를 쓸 때
 
@@ -110,12 +110,12 @@ $env:OPENAI_API_KEY = '<your-openai-key>'
 $env:OPENAI_MODEL = '<model-id-you-can-access>'
 ```
 
-실제 키를 README, `.env.example`, GitHub Issue나 코드에 적지 마세요. 키를 넣는다고 자동으로 웹 검색이 활성화되는 것도 아닙니다. [Pipeline을 명시적으로 실행](PROVIDER_RECIPES.md)해야 외부 호출이 발생합니다.
+실제 키를 README, `.env.example`, GitHub Issue나 코드에 적지 마세요. 키를 넣는다고 자동으로 웹 검색이 활성화되는 것도 아닙니다. [Pipeline을 명시적으로 실행](provider-recipes.md)해야 외부 호출이 발생합니다.
 
 ## 다음으로 읽을 문서
 
-- **왜 `review`가 나오는지 궁금하다면** → [판정 흐름](WORKFLOW.md)
+- **왜 `review`가 나오는지 궁금하다면** → [판정 흐름](workflow.md)
 - **Codex·Claude Code에서 말로 요청하고 싶다면** → [AI Agent 사용법](AGENTS.md)
-- **SerpAPI + OpenAI를 연결하고 싶다면** → [온라인 조사 예제](PROVIDER_RECIPES.md)
+- **SerpAPI + OpenAI를 연결하고 싶다면** → [온라인 조사 예제](provider-recipes.md)
 
 [← 문서 길잡이](README.md) · [← 프로젝트 README](../README.md)

@@ -35,4 +35,4 @@ python scripts/check-artifacts.py
 
 검증이 통과한 파일만 새 릴리즈에 첨부합니다. 기존 태그를 강제로 덮어쓰거나 배포 이력을 지우지 않습니다. 문서 수정만으로 반드시 새 버전을 발행할 필요는 없습니다.
 
-[← 전체 문서](README.md) · [처음 실행하기](QUICK_START.md) · [기여 방법](../CONTRIBUTING.md)
+[← 전체 문서](README.md) · [처음 실행하기](quick-start.md) · [기여 방법](../CONTRIBUTING.md)

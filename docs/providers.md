@@ -1,6 +1,6 @@
 # Search Provider와 Judge Provider 연결 규격
 
-이 문서는 **자기 서비스의 검색 API나 LLM을 HSUF에 붙이려는 개발자**를 위한 문서입니다. 단순히 SerpAPI+OpenAI를 사용하려면 [온라인 조사 예제](PROVIDER_RECIPES.md)부터 읽는 편이 쉽습니다.
+이 문서는 **자기 서비스의 검색 API나 LLM을 HSUF에 붙이려는 개발자**를 위한 문서입니다. 단순히 SerpAPI+OpenAI를 사용하려면 [온라인 조사 예제](provider-recipes.md)부터 읽는 편이 쉽습니다.
 
 ## 둘을 왜 나눴나요?
 
@@ -122,4 +122,4 @@ Registry에서 해결되면 외부 Provider를 건너뜁니다. 나머지에 대
 
 기본 테스트는 가짜 HTTP 응답을 넣어 실제 Provider 구현을 검증했습니다. **유료 API 실계정 호출은 v0.1.0 공개 검증 범위에 포함되지 않았습니다.**
 
-[← 문서 길잡이](README.md) · [온라인 조사 따라 하기](PROVIDER_RECIPES.md) · [보안 정책](../SECURITY.md)
+[← 문서 길잡이](README.md) · [온라인 조사 따라 하기](provider-recipes.md) · [보안 정책](../SECURITY.md)

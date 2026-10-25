@@ -27,4 +27,4 @@ HSUF의 공개 예제는 SerpAPI로 후보를 찾고 OpenAI Judge로 비교할 �
 
 제조사 공식 페이지 확인 기록과 일부 콘텐츠 해시는 [공개 출처 확인 기록](../reports/public-source-refresh.json)에 남아 있습니다. 검사에 실패했거나 모델 근거가 부족한 페이지는 검증 완료 정보로 간주하지 않습니다.
 
-[← 문서 길잡이](README.md) · [Registry 이해하기](REGISTRY.md)
+[← 문서 길잡이](README.md) · [Registry 이해하기](registry.md)

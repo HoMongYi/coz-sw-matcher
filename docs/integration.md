@@ -98,4 +98,4 @@ fill / review
 
 **주의:** `fill`이 사내 DB에 자동 반영되어야 하는지, 검수자 승인을 거쳐야 하는지, 재검증 시기와 롤백은 어떻게 할지는 HSUF가 결정하지 않습니다. 그 조직의 운영 정책과 개발팀 역할입니다.
 
-[← 문서 길잡이](README.md) · [API 계약](API.md) · [판정 흐름](WORKFLOW.md)
+[← 문서 길잡이](README.md) · [API 계약](api.md) · [판정 흐름](workflow.md)
