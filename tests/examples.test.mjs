@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from'node:fs';import os from'node:os';import path from'node:path';
 import{main,optionsFromConfig}from'../bin/hsuf.mjs';import{ROOT}from'../src/registry.mjs';import YAML from'yaml';
-import{createEngine}from'../src/index.mjs';import{fixtureRegistry,input}from'./fixtures.mjs';
+import{createEngine}from'../src/legacy-engine.mjs';import{fixtureRegistry,input}from'./fixtures.mjs';
 import{openAITool,claudeTool,handleOpenAI,handleClaude,createAgentToolBridge}from'../examples/agent-api-bridge.mjs';
 import{runCatalogAdapter}from'../examples/integration-adapter.mjs';
 import{validateRegistry}from'../src/registry.mjs';

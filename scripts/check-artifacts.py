@@ -7,16 +7,16 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 root = Path(__file__).resolve().parent.parent
-dist = root / "dist"
+dist = root / "dist" / "v0.2.0"
 expected = {
-    "hardware-software-url-finder-v0.1.0-source.zip",
-    "hsuf-agent-skill-v0.1.0.zip",
-    "hsuf-codex-plugin-v0.1.0.zip",
-    "hardware-software-url-finder-0.1.0.tgz",
+    "coz-sw-matcher-v0.2.0-source.zip",
+    "coz-sw-matcher-agent-skill-v0.2.0.zip",
+    "coz-sw-matcher-codex-plugin-v0.2.0.zip",
+    "coz-sw-matcher-0.2.0.tgz",
 }
 manifest = json.loads((dist / "release-manifest.json").read_text(encoding="utf-8"))
 assert manifest["license"] == "MIT"
-assert manifest["repository"] == "https://github.com/HoMongYi/hardware-software-url-finder"
+assert manifest["repository"] == "https://github.com/HoMongYi/coz-sw-matcher"
 records = {item["name"]: item for item in manifest["artifacts"]}
 assert set(records) == expected and len(manifest["artifacts"]) == len(expected)
 sums = {}
@@ -82,17 +82,17 @@ for name in sorted(expected):
         check_content(file_name, content)
     if name.endswith("-source.zip"):
         assert {"package.json", "LICENSE", "README.md", "CONTRIBUTING.md"}.issubset(files)
-        assert not any(n.startswith("hardware-software-url-finder/") for n in files)
+        assert not any(n.startswith("coz-sw-matcher/") for n in files)
         metadata = json.loads(files["package.json"])
         assert metadata["license"] == "MIT" and "private" not in metadata
         assert files["LICENSE"] == license_bytes
-    elif name.startswith("hsuf-agent-skill"):
-        assert files["hardware-software-url-finder/LICENSE"] == license_bytes
-        assert "hardware-software-url-finder/SKILL.md" in files
-    elif name.startswith("hsuf-codex-plugin"):
-        assert files["hardware-software-url-finder/LICENSE"] == license_bytes
-        assert files["hardware-software-url-finder/runtime/LICENSE"] == license_bytes
-        assert json.loads(files["hardware-software-url-finder/runtime/package.json"])["license"] == "MIT"
+    elif name.startswith("coz-sw-matcher-agent-skill"):
+        assert files["coz-sw-matcher/LICENSE"] == license_bytes
+        assert "coz-sw-matcher/SKILL.md" in files
+    elif name.startswith("coz-sw-matcher-codex-plugin"):
+        assert files["coz-sw-matcher/LICENSE"] == license_bytes
+        assert files["coz-sw-matcher/runtime/LICENSE"] == license_bytes
+        assert json.loads(files["coz-sw-matcher/runtime/package.json"])["license"] == "MIT"
     else:
         assert files["package/LICENSE"] == license_bytes
         assert json.loads(files["package/package.json"])["license"] == "MIT"

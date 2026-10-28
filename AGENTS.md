@@ -1,31 +1,19 @@
-# Repository 작업 규칙
+# Coz SW Matcher 작업 규칙
 
-이 저장소는 Node.js ESM 기반의 Hardware Software URL Finder입니다. 공개 프로젝트의 첫 버전은 `v0.1.0`이며, 제품명으로 공식 하드웨어 소프트웨어 URL을 찾아 `fill / blank / review`로 판정합니다.
+Node.js 22 이상 ESM 프로젝트. 컴퓨존 상품명으로 공식 SW URL 후보 0~5개와 담당자 검수 근거를 반환한다.
 
-## 수정 전 확인할 것
+- 공개 진입점은 src/index.mjs의 createMatcher, bin/coz-sw-matcher.mjs, src/interfaces이다.
+- src/legacy-engine.mjs 및 과거 HTTP/MCP/CLI는 안전 회귀 검증용이다. 신규 연동에 노출하거나 범용 기능을 증설하지 않는다.
+- 모든 신규 결과와 후보는 approved=false. 담당자 승인 API/DB/인증은 전산팀 소유이며 이 프로젝트는 계약만 검증한다.
+- D4/D5, WiFi, V2, Rev, OC, HE, SE+, PRO/MAX, 용량을 임의로 합치지 않는다. 결합상품은 대상 구성품 선택 전 보류한다.
+- 공식 도메인만으로 적합성을 확정하지 않는다. 정확 모델·SW 유형·다운로드 근거가 필요하다.
+- 외부 후보가 제공되면 빈 배열이어도 검색하지 않는다. Provider 장애/차단/불명확은 needs_review다.
+- 검수 CSV와 승인 이력은 data/private, 평가 원본은 reports/local에만 둔다. 상품번호/내부 데이터/키를 공개 자료에 추가하지 않는다.
+- CSV checked_at과 실접속 verified_at을 분리한다. 과거 검수에서 오늘 날짜를 만들지 않는다.
+- GitHub Actions는 사용/추가/재활성화하지 않는다. 검증은 로컬에서 실행한다.
+- 기존 미커밋/스테이징 파일과 공개 v0.1.0 태그·릴리스를 보존한다.
+- 실제 변경 후 HANDOFF.md는 마지막에 한 번 현재 상태로 갱신한다.
 
-- 정확 모델과 리비전(`V2`, `D4/D5`, `WiFi`, `Pro/Max` 등)을 임의로 합치지 않습니다.
-- Search/Judge는 URL 후보와 근거를 제공할 뿐, 최종 `fill` 여부는 Core Audit가 판단합니다.
-- Provider 장애·접속 차단·모델 불명확은 `review`입니다. `blank`로 바꾸지 않습니다.
-- 공개 Registry의 `needs-refresh` 항목을 근거 없이 `active`로 바꾸지 않습니다.
-- 회사별 상품번호·비공개 검수 데이터·API 키·내부 URL은 공개 저장소에 추가하지 않습니다.
-
-## 문서 작성
-
-README는 처음 방문한 사람이 이해하는 순서로 씁니다. CLI·API 예시는 실제 구현과 대조하고, 검증하지 않은 기능은 검증한 것처럼 설명하지 않습니다. GitHub Mermaid, 표, `<details>`는 도움이 될 때만 사용합니다.
-
-## 검증
-
-```bash
-npm test
-npm run validate
-```
-
-패키징·배포 파일이 변경될 때만 다음을 추가로 실행합니다.
-
-```bash
-npm run release:build
-python scripts/check-artifacts.py
-```
-
-기존 `v0.1.0` 태그나 배포 파일을 임의로 덮어쓰지 않습니다. GitHub에 push·Release 수정이 필요하면 사용자 요청의 범위와 원격 상태를 먼저 확인합니다.
+검증: npm test, npm run lint, npm run validate.
+패키지 변경 시 npm run release:build, python scripts/check-artifacts.py.
+문서: README.md → docs/integration.md, docs/api.md, docs/registry.md.

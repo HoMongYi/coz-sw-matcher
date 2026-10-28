@@ -1,0 +1,6 @@
+{
+ "classification":"PUBLIC_SOURCE_ONLY",
+ "names":["인텍앤컴퍼니","대원씨티에스","제이씨현","디앤디컴","STCOM","에즈윈","펀키스","서린씨앤아이","이엠텍","피씨디렉트"],
+ "delegations":[],
+ "policy":"Distributor identity alone does not authorize its domain; independent manufacturer delegation evidence is required"
+}

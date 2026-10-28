@@ -2,8 +2,8 @@ import fs from 'node:fs';import path from 'node:path';import crypto from 'node:c
 import Ajv2020 from 'ajv/dist/2020.js';
 import {ROOT} from './registry.mjs';
 const ROOT_FILES=['package.json','package-lock.json','README.md','SECURITY.md','CONTRIBUTING.md','CHANGELOG.md','LICENSE','LICENSE-DECISION.md','AGENTS.md','.gitignore','.env.example'];
-const ROOT_DIRS=['src','bin','data/public','schemas','config','skills','examples','docs','tests','scripts','.github'];
-const REPORTS=['reports/migration.json','reports/legacy-comparison.json','reports/public-source-refresh.json','reports/verification.json','reports/FINAL_REPORT.md','reports/RELEASE_NOTES_v0.1.0.md'];
+const ROOT_DIRS=['src','bin','data/public','schemas','config','skills','examples','docs','tests','scripts'];
+const REPORTS=['reports/REDESIGN_REPORT.md'];
 export function filesUnder(dir,base=dir){
  if(!fs.existsSync(dir))return[];return fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name)).flatMap(e=>{const p=path.join(dir,e.name);if(e.isSymbolicLink())throw new Error('PACKAGE_SYMLINK');return e.isDirectory()?filesUnder(p,base):[path.relative(base,p).replaceAll('\\','/')];});
 }
@@ -26,10 +26,10 @@ export function scanPublic(root=ROOT){
 export function validatePlugin(pluginDir){
  const schema=JSON.parse(fs.readFileSync(path.join(ROOT,'schemas/plugin-manifest.schema.json'),'utf8'));const ajv=new Ajv2020({strict:false,validateFormats:false});const check=ajv.compile(schema);const manifest=JSON.parse(fs.readFileSync(path.join(pluginDir,'plugin.json'),'utf8'));
  if(!check(manifest))throw new Error('INVALID_PORTABLE_PLUGIN_MANIFEST');
- const mcp=JSON.parse(fs.readFileSync(path.join(pluginDir,'mcp.json'),'utf8'));const mcpSchema=JSON.parse(fs.readFileSync(path.join(ROOT,'schemas/plugin-mcp.schema.json'),'utf8'));const mcpCheck=ajv.compile(mcpSchema);if(!mcpCheck(mcp))throw new Error('INVALID_PORTABLE_PLUGIN_MCP');const server=mcp.mcpServers?.hsuf;
+ const mcp=JSON.parse(fs.readFileSync(path.join(pluginDir,'mcp.json'),'utf8'));const mcpSchema=JSON.parse(fs.readFileSync(path.join(ROOT,'schemas/plugin-mcp.schema.json'),'utf8'));const mcpCheck=ajv.compile(mcpSchema);if(!mcpCheck(mcp))throw new Error('INVALID_PORTABLE_PLUGIN_MCP');const server=mcp.mcpServers?.['coz-sw-matcher'];
  if(!server||server.command!=='node'||!Array.isArray(server.args)||server.args[1]!=='mcp')throw new Error('INVALID_PLUGIN_MCP');
  const runtimeEntry=server.args[0].replace('${PLUGIN_ROOT}/','');if(!fs.existsSync(path.join(pluginDir,runtimeEntry)))throw new Error('PLUGIN_RUNTIME_MISSING');
- const canonical=fs.readFileSync(path.join(ROOT,'skills/hardware-software-url-finder/SKILL.md'));const packaged=fs.readFileSync(path.join(pluginDir,'skills/hardware-software-url-finder/SKILL.md'));
+ const canonical=fs.readFileSync(path.join(ROOT,'skills/coz-sw-matcher/SKILL.md'));const packaged=fs.readFileSync(path.join(pluginDir,'skills/coz-sw-matcher/SKILL.md'));
  if(!canonical.equals(packaged))throw new Error('PLUGIN_SKILL_DRIFT');
  return{status:'Passed',manifest_schema:schema.$id,canonical_skill_sha256:crypto.createHash('sha256').update(canonical).digest('hex'),runtime_entry:runtimeEntry};
 }
@@ -49,23 +49,23 @@ export function buildRelease(root=ROOT){
  const license=fs.readFileSync(path.join(root,'LICENSE'));
  if(metadata.license!=='MIT'||metadata.private===true||!license.toString().includes('MIT License'))throw new Error('PUBLIC_LICENSE_REQUIRED');
  const scan=scanPublic(root);if(scan.status!=='Passed')throw new Error('PUBLIC_SCAN_FAILED');
- const dist=path.join(root,'dist');fs.mkdirSync(dist,{recursive:true});const plugin=path.join(dist,'hsuf-codex-plugin-v0.1.0');fs.mkdirSync(plugin,{recursive:true});
+ const dist=path.join(root,'dist','v0.2.0');fs.mkdirSync(dist,{recursive:true});const plugin=path.join(dist,'coz-sw-matcher-codex-plugin-v0.2.0');fs.mkdirSync(plugin,{recursive:true});
  const runtime=path.join(plugin,'runtime');fs.mkdirSync(runtime,{recursive:true});
  const allowed=publicFiles(root);
  for(const rel of allowed){const target=path.join(runtime,rel);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(path.join(root,rel),target);}
  fs.cpSync(path.join(root,'skills'),path.join(plugin,'skills'),{recursive:true});
  fs.writeFileSync(path.join(plugin,'LICENSE'),license);
- const manifest={$schema:'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',name:'hardware-software-url-finder',version:'0.1.0',description:'Official software URL resolution through audited Core, offline Registry and optional research',keywords:['hardware','software','drivers','mcp','skills']};
+ const manifest={$schema:'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',name:'coz-sw-matcher',version:'0.2.0',description:'Official software URL resolution through audited Core, offline Registry and optional research',keywords:['hardware','software','drivers','mcp','skills']};
  fs.writeFileSync(path.join(plugin,'plugin.json'),JSON.stringify(manifest,null,2)+'\n');
- fs.writeFileSync(path.join(plugin,'mcp.json'),JSON.stringify({$schema:'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json',mcpServers:{hsuf:{type:'stdio',command:'node',args:['${PLUGIN_ROOT}/runtime/bin/hsuf.mjs','mcp'],env:{HSUF_HOME:'${PLUGIN_ROOT}/runtime'}}}},null,2)+'\n');
- const fallback=path.join(plugin,'.codex-plugin');fs.mkdirSync(fallback,{recursive:true});fs.writeFileSync(path.join(fallback,'plugin.json'),JSON.stringify({name:manifest.name,version:'0.1.0',description:manifest.description,skills:'./skills',mcpServers:'./mcp.json'},null,2)+'\n');
+ fs.writeFileSync(path.join(plugin,'mcp.json'),JSON.stringify({$schema:'https://agent-plugins.org/schemas/1.0.0/mcp.schema.json',mcpServers:{'coz-sw-matcher':{type:'stdio',command:'node',args:['${PLUGIN_ROOT}/runtime/bin/coz-sw-matcher.mjs','mcp'],env:{COZ_SW_HOME:'${PLUGIN_ROOT}/runtime'}}}},null,2)+'\n');
+ const fallback=path.join(plugin,'.codex-plugin');fs.mkdirSync(fallback,{recursive:true});fs.writeFileSync(path.join(fallback,'plugin.json'),JSON.stringify({name:manifest.name,version:'0.2.0',description:manifest.description,skills:'./skills',mcpServers:'./mcp.json'},null,2)+'\n');
  const pluginValidation=validatePlugin(plugin);
  const pluginPaths=[...allowed.map(rel=>'runtime/'+rel),...filesUnder(path.join(root,'skills')).map(rel=>'skills/'+rel),'LICENSE','plugin.json','mcp.json','.codex-plugin/plugin.json'];
  const skillEntries=filesUnder(path.join(root,'skills')).map(rel=>({name:rel,data:fs.readFileSync(path.join(root,'skills',rel))}));
- if(!skillEntries.some(e=>e.name==='hardware-software-url-finder/LICENSE'))skillEntries.push({name:'hardware-software-url-finder/LICENSE',data:license});
- const artifacts=[['hardware-software-url-finder-v0.1.0-source.zip',allowed.map(rel=>({name:rel,data:fs.readFileSync(path.join(root,rel))}))],['hsuf-agent-skill-v0.1.0.zip',skillEntries],['hsuf-codex-plugin-v0.1.0.zip',pluginPaths.sort().map(rel=>({name:'hardware-software-url-finder/'+rel,data:fs.readFileSync(path.join(plugin,rel))}))]];
+ if(!skillEntries.some(e=>e.name==='coz-sw-matcher/LICENSE'))skillEntries.push({name:'coz-sw-matcher/LICENSE',data:license});
+ const artifacts=[['coz-sw-matcher-v0.2.0-source.zip',allowed.map(rel=>({name:rel,data:fs.readFileSync(path.join(root,rel))}))],['coz-sw-matcher-agent-skill-v0.2.0.zip',skillEntries],['coz-sw-matcher-codex-plugin-v0.2.0.zip',pluginPaths.sort().map(rel=>({name:'coz-sw-matcher/'+rel,data:fs.readFileSync(path.join(plugin,rel))}))]];
  const hashes=[];
  for(const[name,entries]of artifacts){const target=path.join(dist,name);writeZip(target,entries);const data=fs.readFileSync(target);hashes.push({name,bytes:data.length,sha256:crypto.createHash('sha256').update(data).digest('hex')});}
  fs.writeFileSync(path.join(dist,'SHA256SUMS.txt'),hashes.map(h=>h.sha256+'  '+h.name).join('\n')+'\n');
- const report={version:'0.1.0',status:'LOCAL_PUBLIC_RELEASE_CANDIDATE',license:'MIT',repository:'https://github.com/HoMongYi/hardware-software-url-finder',tag:'v0.1.0',release_title:'Hardware Software URL Finder v0.1.0',publish:'Not run',scan,plugin:pluginValidation,artifacts:hashes};fs.writeFileSync(path.join(dist,'release-manifest.json'),JSON.stringify(report,null,2)+'\n');return report;
+ const report={version:'0.2.0',status:'LOCAL_PUBLIC_RELEASE_CANDIDATE',license:'MIT',repository:'https://github.com/HoMongYi/coz-sw-matcher',tag:'v0.2.0',release_title:'Coz SW Matcher v0.2.0',publish:'Not run',scan,plugin:pluginValidation,artifacts:hashes};fs.writeFileSync(path.join(dist,'release-manifest.json'),JSON.stringify(report,null,2)+'\n');return report;
 }

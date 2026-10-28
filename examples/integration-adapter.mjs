@@ -1,4 +1,4 @@
-import {createEngine} from '../src/index.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';
 export async function runCatalogAdapter({readCatalog,acceptResult,engine=createEngine()}){
   const source=await readCatalog();
   // The organisation supplies generic fields; no DB schema is assumed here.

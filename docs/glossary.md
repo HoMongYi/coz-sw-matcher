@@ -1,34 +1,13 @@
-# 용어 쉽게 이해하기
+# 용어
 
-처음 보는 사람이 헷갈리기 쉬운 표현만 모았습니다.
-
-| 용어 | 쉽게 말하면 |
+| 필드 | 의미 |
 |---|---|
-| **HSUF / Core** | 제품명을 분석하고 공식 URL을 판정하는 프로그램 본체 |
-| **Registry** | 이미 확인한 제조사·모델·소프트웨어 정보 모음 |
-| **Exact Model** | 이름이 비슷한 제품이 아니라, **정확히 같은 모델/리비전** |
-| **Alias** | 다른 판매명·표기지만 같은 모델이라는 근거가 확보된 이름 |
-| **Ecosystem** | 특정 제조사의 공용 설정 프로그램(예: 키보드 설정 앱)과 지원 제품 관계 |
-| **Candidate** | 검색에서 찾은 후보 URL. 아직 정답이 아님 |
-| **Search Provider** | SerpAPI처럼 인터넷 검색 결과를 가져오는 연결 부품 |
-| **Judge Provider** | OpenAI처럼 여러 후보를 비교해 추천 ID를 알려주는 연결 부품 |
-| **Hard Reject** | 점수가 높아도 제외해야 하는 URL(쇼핑몰·직접 실행 파일 등) |
-| **Audit** | 공식 도메인·정확 모델·페이지 내용 등을 검사하는 최종 검증 |
-| **Provenance** | 해당 URL이나 지원 모델을 확인한 **공식 출처** |
-| **`verified_at`** | 출처를 검증한 날짜. 실행일과 다름 |
-| **`needs-refresh`** | 오래됐거나 불충분해 다시 확인해야 하는 정보 |
-| **Offline** | 실행 중 인터넷 검색·외부 API를 호출하지 않는 모드 |
-| **CLI** | 터미널에서 `node bin/hsuf.mjs`처럼 명령으로 실행하는 방법 |
-| **Agent Skill** | AI Agent에게 HSUF 작업 순서를 설명하는 패키지 |
-| **MCP** | AI Agent가 HSUF 기능을 Tool로 부를 수 있도록 연결하는 규격 |
-| **HTTP API** | 다른 프로그램이 HTTP 요청으로 HSUF 판정을 받는 방법 |
-| **Private Overlay** | 조직에서 공개하지 않고 별도로 관리하는 확정 모델/예외 규칙 |
-| **Legacy CSV** | 기존 시스템용 `input_id,product_name,url` 3열 출력 |
-
-### 가장 헷갈리는 두 가지
-
-**Registry에 제조사가 있다는 것 = 해당 브랜드 전 제품을 지원한다는 뜻이 아닙니다.** 공식 도메인만 알고 있는 제품은 모델별 근거가 부족해서 `review`일 수 있습니다.
-
-**`review` = 고장/실패가 아닙니다.** 잘못된 URL을 고객에게 안내하지 않기 위해 확인이 필요하다고 표시한 안전한 결과입니다.
-
-[← 문서 길잡이](README.md) · [← 프로젝트 README](../README.md)
+| manufacturer | 하드웨어 제조 주체 |
+| distributor | 국내 유통/AS 주체 |
+| software_provider | 실제 소프트웨어 제공사 |
+| page_type | 다운로드/지원/소개/판매/기타 목적 |
+| audit_status | 실접속 검증 또는 재확인 필요 상태 |
+| dataset_checked_at | 과거 검수 CSV의 기록일 |
+| verified_at | 독립적인 현재 페이지 검증일; 미실행이면 null |
+| needs_review | 근거 부족 또는 불확실 |
+| needs_human_approval | 담당자 선택 대기 |

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import { pathToFileURL } from 'node:url';
-import { createEngine } from '../src/index.mjs';
+import { createEngine } from '../src/legacy-engine.mjs';
 import { parseCatalogCsv,resultsCsv } from '../src/csv.mjs';
 import { pipelineProviders, GenericHttpSearchProvider, GenericHttpJudgeProvider, CommandJudgeProvider } from '../src/providers.mjs';
 import { loadRegistry,validateRegistry,ROOT } from '../src/registry.mjs';

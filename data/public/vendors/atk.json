@@ -1,0 +1,6 @@
+{
+ "id":"atk","name":"ATK","aliases":["ATK"],"domains":["www.atk.store"],
+ "classification":"PUBLIC_SOURCE_ONLY","provenance":["https://www.atk.store/ko-kr/pages/atk-hub"],"verified_at":null,
+ "noise_tokens":[],"model_aliases":[],"rules":[],"models":[],
+ "ecosystems":[{"id":"atk-hub","name":"ATK HUB","canonical_page":"https://www.atk.store/ko-kr/pages/atk-hub","status":"needs-refresh","verified_at":null,"provenance":["https://www.atk.store/ko-kr/pages/atk-hub"],"support_mode":"explicit-model-list","supported_models":[],"excluded_models":[],"software_kind":"control-app"}]
+}

@@ -1,6 +1,6 @@
 // Local migration audit only. No raw source inputs or identifiers are emitted.
 import fs from 'node:fs';import path from 'node:path';
-import {createEngine} from '../src/index.mjs';import {ROOT} from '../src/registry.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';import {ROOT} from '../src/registry.mjs';
 const source=process.argv[2];if(!source)throw new Error('SOURCE_DIRECTORY_REQUIRED');
 const cases=fs.readFileSync(path.join(source,'tests/golden-cases.jsonl'),'utf8').split(/\r?\n/).filter(s=>s.trim()&&!s.startsWith('//')).map(JSON.parse);
 const engine=createEngine();const totals={},decisionCounts={},policyChanges={};

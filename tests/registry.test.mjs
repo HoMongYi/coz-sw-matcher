@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import { fixtureVendor,fixtureRegistry,input } from './fixtures.mjs';
 import { validateRegistry,loadRegistry } from '../src/registry.mjs';
-import {createEngine} from '../src/index.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';
 test('public registry schema/conflict validation passes',()=>assert.equal(validateRegistry(loadRegistry().vendors).valid,true));
 test('duplicate vendor rejected',()=>assert.equal(validateRegistry([fixtureVendor(),fixtureVendor()]).valid,false));
 test('conflicting model URLs rejected',()=>{const v=fixtureVendor();v.models.push({...v.models[0],id:'conflict',canonical_page:'https://example.com/support/other'});assert.ok(validateRegistry([v]).errors.some(r=>r.startsWith('EXACT_CONFLICT')));});

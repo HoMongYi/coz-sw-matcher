@@ -6,7 +6,7 @@ test('CSV contract supports quoted multiline and neutralizes spreadsheet formula
  assert.throws(()=>parseCatalogCsv('product_no,product_name\n1,ABC\n'),/CSV_COLUMNS/);
 });
 test('HTTP exposes all documented read-only routes with the same Core',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {createHttpServer}=await import('../src/http.mjs');const registry=fixtureRegistry();registry.vendors[0].ecosystems=[{...registry.vendors[0].models[0],id:'example-ecosystem'}];const s=createHttpServer(createEngine({registry,now:'2026-10-01'}));await new Promise(r=>s.listen(0,'127.0.0.1',r));
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {createHttpServer}=await import('../src/http.mjs');const registry=fixtureRegistry();registry.vendors[0].ecosystems=[{...registry.vendors[0].models[0],id:'example-ecosystem'}];const s=createHttpServer(createEngine({registry,now:'2026-10-01'}));await new Promise(r=>s.listen(0,'127.0.0.1',r));
  try{const base=`http://127.0.0.1:${s.address().port}`;const post=async(p,b)=>fetch(base+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});
  assert.equal((await fetch(base+'/health')).status,200);assert.equal((await(await post('/v1/resolve',input())).json()).decision,'fill');
  assert.equal((await(await post('/v1/resolve/batch',{items:[input()]})).json()).results.length,1);
@@ -17,7 +17,7 @@ test('HTTP exposes all documented read-only routes with the same Core',async()=>
  }finally{await new Promise(r=>s.close(r));}
 });
 test('MCP official SDK client lists six read-only tools and returns structured output',async()=>{
- const {createMcpServer}=await import('../src/mcp.mjs');const {createEngine}=await import('../src/index.mjs');const {Client,InMemoryTransport}=await import('@modelcontextprotocol/client');
+ const {createMcpServer}=await import('../src/mcp.mjs');const {createEngine}=await import('../src/legacy-engine.mjs');const {Client,InMemoryTransport}=await import('@modelcontextprotocol/client');
  const server=createMcpServer(createEngine({registry:fixtureRegistry(),now:'2026-10-01'}));const client=new Client({name:'synthetic-test',version:'1.0.0'});
  const [a,b]=InMemoryTransport.createLinkedPair();await Promise.all([server.connect(b),client.connect(a)]);
  try{const listed=await client.listTools();assert.equal(listed.tools.length,6);assert.ok(listed.tools.every(t=>t.annotations.readOnlyHint&&t.outputSchema));
@@ -30,11 +30,11 @@ test('MCP official SDK client lists six read-only tools and returns structured o
  }finally{await client.close();await server.close();}
 });
 test('HTTP auth and request limits are enforced',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {createHttpServer}=await import('../src/http.mjs');const s=createHttpServer(createEngine({registry:fixtureRegistry()}),{token:'synthetic-token',maxBytes:100});await new Promise(r=>s.listen(0,'127.0.0.1',r));
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {createHttpServer}=await import('../src/http.mjs');const s=createHttpServer(createEngine({registry:fixtureRegistry()}),{token:'synthetic-token',maxBytes:100});await new Promise(r=>s.listen(0,'127.0.0.1',r));
  try{const b=`http://127.0.0.1:${s.address().port}`;assert.equal((await fetch(b+'/health')).status,401);assert.equal((await fetch(b+'/health',{headers:{authorization:'Bearer synthetic-token'}})).status,200);assert.equal((await fetch(b+'/v1/resolve',{method:'POST',headers:{authorization:'Bearer synthetic-token','content-type':'application/json'},body:JSON.stringify({product_name:'X'.repeat(110)})})).status,413);}finally{await new Promise(r=>s.close(r));}
 });
 test('MCP explicit research is separate and uses Core audit',async()=>{
- const {createMcpServer}=await import('../src/mcp.mjs');const {createEngine}=await import('../src/index.mjs');const {Client,InMemoryTransport}=await import('@modelcontextprotocol/client');
+ const {createMcpServer}=await import('../src/mcp.mjs');const {createEngine}=await import('../src/legacy-engine.mjs');const {Client,InMemoryTransport}=await import('@modelcontextprotocol/client');
  const e=createEngine({registry:fixtureRegistry(),offline:false,search:{search:async()=>({candidates:[]})}});const server=createMcpServer(e,{allowResearch:true});const client=new Client({name:'synthetic-research',version:'0.1.0'});const[a,b]=InMemoryTransport.createLinkedPair();await Promise.all([server.connect(b),client.connect(a)]);
  try{const tools=await client.listTools();assert.equal(tools.tools.length,7);const r=await client.callTool({name:'research_hardware_software_url',arguments:input('[Example] ABC V9')});assert.equal(r.structuredContent.decision,'review');assert.equal(r.structuredContent.reason_codes[0],'NO_AUDITABLE_CANDIDATE');}finally{await client.close();await server.close();}
 });

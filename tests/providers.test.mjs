@@ -16,26 +16,26 @@ test('Judge cannot invent candidate or return final URL',async()=>{
  const {MockJudgeProvider}=await import('../src/providers.mjs');await assert.rejects(new MockJudgeProvider({decision:'candidate',candidate_id:'evil',reason_codes:[],uncertainties:[]}).judge({candidates:[]}),/INVALID_JUDGE/);
 });
 test('SerpAPI -> scoring -> top five -> OpenAI Judge -> independent Core Audit',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {SerpApiSearchProvider,OpenAIJudgeProvider}=await import('../src/providers.mjs');let judgeCalls=0,pageCalls=0;
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {SerpApiSearchProvider,OpenAIJudgeProvider}=await import('../src/providers.mjs');let judgeCalls=0,pageCalls=0;
  const search=new SerpApiSearchProvider({apiKey:'synthetic-token',request:async()=>({organic_results:[...candidates.map(c=>({link:c.url,title:c.title,snippet:c.snippet})),{link:'https://amazon.com/support/abc-v9',title:'ABC V9 official',snippet:''}]})});
  const judge=new OpenAIJudgeProvider({apiKey:'synthetic-token',model:'synthetic-model',request:async(_u,o)=>{judgeCalls++;const b=JSON.parse(o.body);const req=JSON.parse(b.input);assert.equal(req.candidates.length,5);return{output:[{content:[{type:'output_text',text:JSON.stringify({decision:'candidate',candidate_id:req.candidates[0].id,reason_codes:[],uncertainties:[]})}]}]};}});
  const e=createEngine({registry:fixtureRegistry(),offline:false,search,judge,fetcher:async url=>{pageCalls++;return{url,status:200,headers:{'content-type':'text/html'},redirects:[],verified_at:'2026-10-01',text:'<title>ABC V9 Support</title><p>ABC V9 firmware downloads</p>'};}});
  assert.equal((await e.resolve(input('[Example] ABC V9'))).decision,'fill');assert.equal(judgeCalls,1);assert.equal(pageCalls,1);
 });
 test('Judge approval cannot override wrong page revision or WAF',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {MockSearchProvider,MockJudgeProvider}=await import('../src/providers.mjs');
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {MockSearchProvider,MockJudgeProvider}=await import('../src/providers.mjs');
  for(const html of ['<title>ABC V3 Support</title>ABC V3 driver','<title>Just a moment</title>ABC V9 driver']){
  const e=createEngine({registry:fixtureRegistry(),offline:false,search:new MockSearchProvider(candidates),judge:new MockJudgeProvider(r=>({decision:'candidate',candidate_id:r.candidates[0].id,reason_codes:[],uncertainties:[]})),fetcher:async url=>({url,status:200,headers:{'content-type':'text/html'},text:html,redirects:[],verified_at:'2026-10-01'})});assert.equal((await e.resolve(input('[Example] ABC V9'))).decision,'review');}
 });
 test('search failure or empty search is review, never blank',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {MockSearchProvider}=await import('../src/providers.mjs');
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {MockSearchProvider}=await import('../src/providers.mjs');
  for(const search of [{search:async()=>{throw Error('sensitive provider error');}},new MockSearchProvider([])])assert.equal((await createEngine({registry:fixtureRegistry(),offline:false,search}).resolve(input('[Example] ABC V9'))).decision,'review');
 });
 test('batch dedupes scoped colour variants and preserves each identity',async()=>{
- const {createEngine}=await import('../src/index.mjs');const {MockSearchProvider}=await import('../src/providers.mjs');const search=new MockSearchProvider([{url:'https://example.com/support/abc-v9',title:'ABC V9 Support',snippet:''}]);
+ const {createEngine}=await import('../src/legacy-engine.mjs');const {MockSearchProvider}=await import('../src/providers.mjs');const search=new MockSearchProvider([{url:'https://example.com/support/abc-v9',title:'ABC V9 Support',snippet:''}]);
  const e=createEngine({registry:fixtureRegistry(),offline:false,search,fetcher:async url=>({url,status:200,headers:{'content-type':'text/html'},text:'<title>ABC V9 Support</title>ABC V9 driver',redirects:[],verified_at:'2026-10-01'})});
  const results=await e.batch([input('[Example] ABC V9 Black','a'),input('[Example] ABC V9 White','b')]);assert.equal(search.calls,1);assert.deepEqual(results.map(r=>r.input_id),['a','b']);assert.ok(results.every(r=>r.decision==='fill'));
 });
 test('offline never calls research',async()=>{
- const {createEngine}=await import('../src/index.mjs');const e=createEngine({registry:fixtureRegistry(),search:{search:()=>{assert.fail('offline network');}}});assert.equal((await e.resolve(input('[Example] ABC V9'))).decision,'review');
+ const {createEngine}=await import('../src/legacy-engine.mjs');const e=createEngine({registry:fixtureRegistry(),search:{search:()=>{assert.fail('offline network');}}});assert.equal((await e.resolve(input('[Example] ABC V9'))).decision,'review');
 });

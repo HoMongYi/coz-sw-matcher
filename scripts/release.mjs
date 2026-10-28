@@ -4,7 +4,7 @@ import fs from 'node:fs';import path from 'node:path';import crypto from 'node:c
 const report=buildRelease();const npmCli=process.env.npm_execpath || path.join(path.dirname(process.execPath),'node_modules/npm/bin/npm-cli.js');
 if(!fs.existsSync(npmCli))throw new Error('NPM_CLI_REQUIRED_FOR_RELEASE_TARBALL');
 const safeEnv=Object.fromEntries(Object.entries(process.env).filter(([k])=>/^(PATH|SYSTEMROOT|WINDIR|TEMP|TMP|LANG|LC_ALL)$/i.test(k)));
-const packed=JSON.parse(execFileSync(process.execPath,[npmCli,'pack','--json','--ignore-scripts','--offline','--pack-destination','dist','--cache',path.join(ROOT,'.cache/npm')],{cwd:ROOT,env:safeEnv,windowsHide:true,maxBuffer:2_097_152}).toString())[0];
-const data=fs.readFileSync(path.join(ROOT,'dist',packed.filename));report.artifacts.push({name:packed.filename,bytes:data.length,sha256:crypto.createHash('sha256').update(data).digest('hex'),entries:packed.entryCount});
-fs.writeFileSync(path.join(ROOT,'dist/release-manifest.json'),JSON.stringify(report,null,2)+'\n');fs.writeFileSync(path.join(ROOT,'dist/SHA256SUMS.txt'),report.artifacts.map(a=>a.sha256+'  '+a.name).join('\n')+'\n');
+const packed=JSON.parse(execFileSync(process.execPath,[npmCli,'pack','--json','--ignore-scripts','--offline','--pack-destination','dist/v0.2.0','--cache',path.join(ROOT,'.cache/npm')],{cwd:ROOT,env:safeEnv,windowsHide:true,maxBuffer:2_097_152}).toString())[0];
+const data=fs.readFileSync(path.join(ROOT,'dist/v0.2.0',packed.filename));report.artifacts.push({name:packed.filename,bytes:data.length,sha256:crypto.createHash('sha256').update(data).digest('hex'),entries:packed.entryCount});
+fs.writeFileSync(path.join(ROOT,'dist/v0.2.0/release-manifest.json'),JSON.stringify(report,null,2)+'\n');fs.writeFileSync(path.join(ROOT,'dist/v0.2.0/SHA256SUMS.txt'),report.artifacts.map(a=>a.sha256+'  '+a.name).join('\n')+'\n');
 console.log(JSON.stringify(report,null,2));

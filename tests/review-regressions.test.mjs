@@ -1,4 +1,4 @@
-import test from'node:test';import assert from'node:assert/strict';import{createEngine}from'../src/index.mjs';
+import test from'node:test';import assert from'node:assert/strict';import{createEngine}from'../src/legacy-engine.mjs';
 import{fixtureRegistry,fixtureVendor,input,page}from'./fixtures.mjs';import{MockSearchProvider}from'../src/providers.mjs';import{safeRequest,pageEvidence}from'../src/network.mjs';
 test('URL model and support text cannot substitute for empty fetched body',()=>{const e=createEngine({registry:fixtureRegistry()});const proof={...page(),title:'',text:''};assert.equal(e.finalize(input(),{url:proof.url},proof).decision,'review');});
 test('extensionless attachment and binary MIME are rejected',()=>{const e=createEngine({registry:fixtureRegistry()});for(const headers of[{'content-type':'application/octet-stream'},{'content-type':'text/html','content-disposition':'attachment; filename=driver.exe'}]){const proof=pageEvidence({status:200,url:'https://example.com/support/abc-v2',text:'<title>ABC V2</title>ABC V2 driver',headers,redirects:[],verified_at:'2026-10-01'});assert.equal(e.finalize(input(),{url:proof.url},proof).decision,'review');}});

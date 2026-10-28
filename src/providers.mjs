@@ -16,10 +16,10 @@ export class MockJudgeProvider {
 export class SerpApiSearchProvider {
   id = 'serpapi';
   constructor({ apiKey = process.env.SERPAPI_API_KEY, request = requestJson } = {}) { this.apiKey=apiKey;this.request=request; }
-  async search({ query, limit = 20 }) {
+  async search({ query, limit = 20, signal }) {
     if (!this.apiKey) throw new Error('SERPAPI_KEY_REQUIRED');
     const u = new URL('https://serpapi.com/search.json');u.search = new URLSearchParams({engine:'google',q:query,num:String(Math.min(20,limit)),api_key:this.apiKey}).toString();
-    const data=await this.request(u.href,{timeoutMs:12000,maxBytes:1_048_576});
+    const data=await this.request(u.href,{signal,timeoutMs:12000,maxBytes:1_048_576});
     if (data.error || !Array.isArray(data.organic_results)) throw new Error('SERPAPI_RESPONSE_FAILURE');
     return checkSearch({candidates:data.organic_results.slice(0,20).map(r=>({url:r.link,title:r.title,snippet:r.snippet || ''}))});
   }

@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {fixtureVendor,fixtureRegistry,input,page} from './fixtures.mjs';
-import {createEngine} from '../src/index.mjs';import {urlFilter} from '../src/audit.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';import {urlFilter} from '../src/audit.mjs';
 for(const suffix of ['.exe','.msi','.zip','.rar','.7z','.pdf','.bin','.rom','.cap'])test(`final rejects direct ${suffix}`,()=>assert.ok(urlFilter('https://example.com/software'+suffix,['example.com']).reasons.includes('DIRECT_FILE')));
 for(const host of ['amazon.com','newegg.com','taobao.com','tmall.com','jd.com','aliexpress.com','reddit.com','bit.ly','filehippo.com'])test(`discovery-only ${host}`,()=>assert.ok(urlFilter(`https://${host}/support/abc-v2`,[host]).reasons.includes('DISCOVERY_ONLY_HOST')));
 test('download filename hidden in functional query rejected',()=>assert.ok(urlFilter('https://example.com/download?file=installer.exe',['example.com']).reasons.includes('DIRECT_FILE')));

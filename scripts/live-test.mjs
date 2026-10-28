@@ -1,6 +1,6 @@
 // Explicit opt-in. Credentials come only from this process's environment.
 import test from 'node:test';import assert from 'node:assert/strict';
-import {createEngine,loadRegistry} from '../src/index.mjs';import {pipelineProviders,SerpApiSearchProvider,OpenAIJudgeProvider} from '../src/providers.mjs';
+import {createEngine,loadRegistry} from '../src/legacy-engine.mjs';import {pipelineProviders,SerpApiSearchProvider,OpenAIJudgeProvider} from '../src/providers.mjs';
 const enabled=process.env.HSUF_RUN_PAID_TESTS==='1'&&process.env.SERPAPI_API_KEY&&process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL;
 test('optional paid SerpAPI live contract',{skip:!enabled},async()=>{
  const r=await new SerpApiSearchProvider().search({query:'Canon PIXMA E3470 driver site:asia.canon',limit:5});assert.ok(Array.isArray(r.candidates));

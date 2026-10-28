@@ -1,4 +1,4 @@
-import {createEngine} from '../src/index.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';
 import {schema} from '../src/contracts.mjs';
 // The host sends tool results to its chosen agent API. Neither agent supplies final URLs.
 export const openAITool={type:'function',name:'resolve_hardware_software_url',description:'Offline official software URL resolution with exact model audit',strict:false,parameters:schema('input')};

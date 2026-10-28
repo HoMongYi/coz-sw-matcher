@@ -34,7 +34,7 @@ function requestPinned(u, records, options) {
   return new Promise((resolve, reject) => {
     const { method = 'GET', headers = {}, body, timeoutMs, maxBytes } = options;
     const client = u.protocol === 'https:' ? https : http;
-    const req = client.request(u, { method, headers: { 'user-agent': 'HSUF/0.1.0 (+official-support-audit)', 'accept-encoding': 'identity', ...headers }, lookup(_hostname, lookupOptions, cb) {
+    const req = client.request(u, { method, signal:options.signal, headers: { 'user-agent': 'Coz-SW-Matcher/0.2.0 (+official-support-audit)', 'accept-encoding': 'identity', ...headers }, lookup(_hostname, lookupOptions, cb) {
       const chosen = records.find(r => !lookupOptions.family || r.family === lookupOptions.family) || records[0];
       if (lookupOptions.all) cb(null, [chosen]); else cb(null, chosen.address, chosen.family);
     } }, res => {
@@ -55,6 +55,7 @@ export async function safeRequest(value, options = {}) {
   if (!(settings.timeoutMs > 0 && settings.timeoutMs <= 30000 && settings.maxBytes > 0 && settings.maxBytes <= 2_097_152 && settings.maxRedirects >= 0 && settings.maxRedirects <= 5)) throw new Error('INVALID_NETWORK_LIMITS');
   const start = Date.now(), deadline = start + settings.timeoutMs; let current = value; const redirects = [];
   for (let i = 0; i <= settings.maxRedirects; i++) {
+    if(settings.signal?.aborted)throw new Error('REQUEST_ABORTED');
     const remaining = deadline - Date.now(); if (remaining <= 0) throw new Error('REQUEST_TIMEOUT');
     let timer;
     const guarded = await Promise.race([guardUrl(current, settings.resolver), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('DNS_TIMEOUT')), remaining); })]).finally(() => clearTimeout(timer));

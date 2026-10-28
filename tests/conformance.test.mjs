@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {fileURLToPath} from 'node:url';
-import {createEngine} from '../src/index.mjs';
+import {createEngine} from '../src/legacy-engine.mjs';
 import {MockSearchProvider,MockJudgeProvider,GenericHttpSearchProvider,GenericHttpJudgeProvider,CommandJudgeProvider,OpenAIJudgeProvider,SerpApiSearchProvider} from '../src/providers.mjs';
 import {fixtureRegistry,input} from './fixtures.mjs';
 const candidates=[{url:'https://example.com/support/1',title:'ABC V9 Support',snippet:'ABC V9 driver'},{url:'https://example.com/support/2',title:'ABC V9 Support',snippet:'ABC V9 driver'}];
