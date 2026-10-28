@@ -12,7 +12,13 @@ export function scanPublic(root=ROOT){
  const findings=[];const files=publicFiles(root);
  for(const rel of files){
   if(/(^|\/)(private|exports|\.cache|node_modules|\.git)(\/|$)|\.env(\.|$)/.test(rel)&&rel!=='.env.example')findings.push({file:rel,code:'DISALLOWED_PATH'});
-  const text=fs.readFileSync(path.join(root,rel),'utf8');
+  const bytes=fs.readFileSync(path.join(root,rel));
+  if(rel==='docs/media/cover.webp'||rel==='docs/media/demo-preview.gif'){
+   const valid=rel.endsWith('.webp')?bytes.subarray(0,4).toString()==='RIFF'&&bytes.subarray(8,12).toString()==='WEBP':/^GIF8[79]a$/.test(bytes.subarray(0,6).toString());
+   if(!valid||bytes.length>2_097_152)findings.push({file:rel,code:'INVALID_PUBLIC_MEDIA'});
+   continue;
+  }
+  const text=bytes.toString('utf8');
   for(const[code,re]of Object.entries({PRIVATE_KEY:/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,TOKEN_LITERAL:/\b(?:sk-[a-zA-Z0-9_-]{20,}|gh[pousr]_[a-zA-Z0-9]{20,}|AKIA[A-Z0-9]{16})\b/,CREDENTIAL_ASSIGNMENT:/(?:api_key|apikey|password|access_token)\s*[:=]\s*["'][A-Za-z0-9_-]{24,}["']/i,INTERNAL_HOST:/https?:\/\/(?:10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|169\.254\.169\.254|[^/\s]+\.(?:internal|corp))(?:[/:\s]|$)/i})){
     // Documented synthetic SSRF vectors are permitted only in tests and SECURITY examples.
     if(code==='INTERNAL_HOST'&&(rel.startsWith('tests/')||rel==='SECURITY.md'))continue;

@@ -17,6 +17,25 @@ test('Source ZIP is flat and all three ZIP packages carry the approved MIT licen
  const release=buildRelease();assert.equal(release.license,'MIT');
  function zipFiles(name){const b=fs.readFileSync(path.join(ROOT,'dist/v0.1.0',name));const files=new Map();let offset=0;while(b.readUInt32LE(offset)===0x04034b50){const size=b.readUInt32LE(offset+18),nameSize=b.readUInt16LE(offset+26),extra=b.readUInt16LE(offset+28);const filename=b.subarray(offset+30,offset+30+nameSize).toString();const start=offset+30+nameSize+extra;files.set(filename,b.subarray(start,start+size));offset=start+size;}return files;}
  const source=zipFiles('coz-sw-matcher-v0.1.0-source.zip');assert.ok(source.has('package.json'));assert.ok(source.has('README.md'));assert.ok(source.has('LICENSE'));assert.ok([...source.keys()].every(p=>!p.startsWith('coz-sw-matcher/')));
+ for(const name of ['docs/media/cover.webp','docs/media/demo-preview.gif'])assert.ok(source.get(name)?.equals(fs.readFileSync(path.join(ROOT,name))));
  const license=fs.readFileSync(path.join(ROOT,'LICENSE'));const skill=zipFiles('coz-sw-matcher-agent-skill-v0.1.0.zip');assert.ok(skill.get('coz-sw-matcher/LICENSE')?.equals(license));
  const plugin=zipFiles('coz-sw-matcher-codex-plugin-v0.1.0.zip');assert.ok(plugin.get('coz-sw-matcher/LICENSE')?.equals(license));assert.ok(plugin.get('coz-sw-matcher/runtime/LICENSE')?.equals(license));
+});
+
+
+test('README media rejects disguised text and oversized files',()=>{
+ fs.mkdirSync(path.join(ROOT,'.cache'),{recursive:true});
+ const temp=fs.mkdtempSync(path.join(ROOT,'.cache/media-policy-'));
+ try{
+  fs.mkdirSync(path.join(temp,'docs/media'),{recursive:true});
+  const cover=fs.readFileSync(path.join(ROOT,'docs/media/cover.webp'));
+  const preview=fs.readFileSync(path.join(ROOT,'docs/media/demo-preview.gif'));
+  fs.writeFileSync(path.join(temp,'docs/media/cover.webp'),cover);
+  fs.writeFileSync(path.join(temp,'docs/media/demo-preview.gif'),preview);
+  assert.equal(scanPublic(temp).status,'Passed');
+  fs.writeFileSync(path.join(temp,'docs/media/cover.webp'),'text disguised as an image');
+  assert.ok(scanPublic(temp).findings.some(f=>f.code==='INVALID_PUBLIC_MEDIA'));
+  fs.writeFileSync(path.join(temp,'docs/media/cover.webp'),Buffer.concat([cover,Buffer.alloc(2_097_153)]));
+  assert.ok(scanPublic(temp).findings.some(f=>f.code==='INVALID_PUBLIC_MEDIA'));
+ }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });

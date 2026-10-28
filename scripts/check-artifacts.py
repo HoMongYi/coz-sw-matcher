@@ -40,6 +40,11 @@ def check_path(name):
     assert path.suffix.lower() not in {".pem", ".key", ".p12", ".pfx", ".dump", ".sql", ".sqlite", ".db"}
 
 def check_content(name, data):
+    relative = name.removeprefix("coz-sw-matcher/runtime/").removeprefix("package/")
+    if relative in {"docs/media/cover.webp", "docs/media/demo-preview.gif"}:
+        valid = (data[:4] == b"RIFF" and data[8:12] == b"WEBP") if relative.endswith(".webp") else data[:6] in {b"GIF87a", b"GIF89a"}
+        assert valid and len(data) <= 2_097_152, (name, "INVALID_PUBLIC_MEDIA")
+        return
     text = data.decode("utf-8")
     vectors = ("/tests/" in "/" + name or name.endswith("SECURITY.md") or name.endswith("scripts/check-artifacts.py"))
     patterns = {
@@ -96,6 +101,10 @@ for name in sorted(expected):
     else:
         assert files["package/LICENSE"] == license_bytes
         assert json.loads(files["package/package.json"])["license"] == "MIT"
+    if not name.startswith("coz-sw-matcher-agent-skill"):
+        prefix = "coz-sw-matcher/runtime/" if name.startswith("coz-sw-matcher-codex-plugin") else "package/" if name.endswith(".tgz") else ""
+        for media in ["docs/media/cover.webp", "docs/media/demo-preview.gif"]:
+            assert files[prefix + media] == (root / media).read_bytes()
     results.append({"name": name, "entries": len(files), "status": "Passed", "sha256": actual_hash})
 assert not findings, findings
 print(json.dumps({"status": "Passed", "source_layout": "flat", "leak_findings": 0, "secret_findings": 0, "artifacts": results}, indent=2))

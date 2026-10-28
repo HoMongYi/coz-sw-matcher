@@ -1,4 +1,4 @@
-export const approvalContract=Object.freeze({version:'1.0',owner:'Compuzone IT integration',operation:'validate-only',selection:'one-existing-candidate',authentication:'host-owned',storage:'host-owned',fields:['request_id','candidate_id','decision','approved_by','approved_at','reason']});
+export const approvalContract=Object.freeze({version:'1.0',owner:'host application',operation:'validate-only',selection:'one-existing-candidate',authentication:'host-owned',storage:'host-owned',fields:['request_id','candidate_id','decision','approved_by','approved_at','reason']});
 export function validateApproval(value,result){
  const errors=[];
  if(!value||Object.keys(value).some(k=>!approvalContract.fields.includes(k)))return {valid:false,errors:['INVALID_APPROVAL_FIELDS'],persisted:false};

@@ -11,11 +11,15 @@
 | SHA256SUMS.txt | 배포 파일 SHA-256 |
 | release-manifest.json | 파일 크기·해시·패키지 검증 정보 |
 
-Skill/Plugin에도 Node.js와 의존성 설치가 필요하다. Agent-host의 실제 설치 UI는 별도 확인 대상이다.
+Skill/Plugin에도 Node.js와 의존성 설치가 필요하다.
+Agent-host의 실제 설치 UI는 별도 확인 대상이다.
 
 ```powershell
 npm run release:build
 python scripts/check-artifacts.py
 ```
 
-로컬 산출물은 dist/v0.1.0에 생성한다. 이 명령은 npm registry 게시나 GitHub 릴리스 생성을 수행하지 않는다. 공개 allowlist·symlink·비밀 패턴·라이선스·해시를 검사한다. GitHub Actions는 사용하지 않는다.
+로컬 산출물은 dist/v0.1.0에 생성한다.
+이 명령은 npm registry 게시나 GitHub 릴리스 생성을 수행하지 않는다.
+공개 allowlist·symlink·비밀 패턴·라이선스·해시를 검사한다.
+GitHub Actions는 사용하지 않는다.

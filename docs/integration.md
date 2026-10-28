@@ -1,6 +1,7 @@
-# 전산팀 연동 계약
+# 입력·출력과 선택 결과 연동
 
-서비스팀은 상품명·선택 기준·오류 사례를 제공한다. 엔진은 후보와 근거를 반환한다. 전산팀은 실제 DB·인증·서버·검수 화면과 승인 저장을 소유한다. 회사 내부 엔드포인트나 테이블을 가정하지 않는다.
+상품명과 소프트웨어 종류, 이미 수집한 URL 후보를 입력하면 분석 결과와 검수 근거를 반환한다.
+CLI, JavaScript, HTTP, MCP는 같은 요청 형식을 사용한다.
 
 ## 요청
 
@@ -18,15 +19,32 @@
 }
 ```
 
-product_no는 선택적 로컬 상관관계 문자열이며 외부 Provider에 전달하지 않는다. candidates는 0~5개, 생략했을 때만 설정된 내부 검색이 가능하다. 결합상품의 target_component는 0부터 시작한다. 종류는 driver/firmware/control-app/web-driver/toolbox/utility/support다.
+`product_name`은 필수다.
+`product_no`는 선택적인 로컬 상관관계 문자열이며 외부 Provider에 보내지 않는다.
+`candidates`는 0~5개다. 이 필드가 있으면 빈 배열이어도 새로 검색하지 않는다.
+생략했을 때만 온라인 모드에서 설정된 검색 Provider를 사용할 수 있다.
 
-응답에는 request_id, parsed, candidates, rejected_candidates, status, reason_codes, approval_contract, metrics가 있다. 각 후보는 id/url/rank/software_provider/software_kind/page_type/audit_status/evidence/evidence_url/verified_at/dataset_checked_at/approved=false를 포함한다.
+`requested_software_kind`는 `driver`, `firmware`, `control-app`, `web-driver`, `toolbox`, `utility`, `support` 중 하나다.
+결합상품의 `target_component`는 0부터 시작하는 구성품 인덱스다.
 
-needs_human_approval은 독립 검증이 끝난 후보에 대한 담당자 선택 대기다. needs_review는 모델/유형/페이지/접속/최신성 등 추가 확인이 필요함을 의미한다. 후보가 없더라도 소프트웨어 없음으로 단정하지 않는다.
+## 응답
 
-## 담당자 승인
+응답에는 `request_id`, `parsed`, `candidates`, `rejected_candidates`, `status`, `reason_codes`, `approval_contract`, `metrics`가 있다.
+후보에는 URL과 순위, 제공사·종류, 페이지 목적, 검증 상태와 근거를 담는다.
+정확한 필드는 [응답 스키마](../schemas/match-result.schema.json)를 참고한다.
 
-담당자가 후보 1개를 선택하고 다음 필드를 사내 시스템에 제출한다.
+`verified_at`은 현재 페이지를 검증한 시각이다.
+과거 자료의 확인일은 `dataset_checked_at`에 따로 남긴다.
+후보와 전체 결과의 `approved`는 항상 `false`다.
+
+`needs_human_approval`은 독립 검증을 마친 후보가 있어 사람의 선택을 기다리는 상태다.
+`needs_review`는 모델, 페이지 용도, 접속 상태 등의 추가 확인이 필요하다는 뜻이다.
+후보가 없어도 소프트웨어가 없다고 단정하지 않는다.
+
+## 사람이 선택한 결과 검증
+
+선택 결과는 다음 형식으로 만들 수 있다.
+자리표시자는 실제 결과와 확인된 사용자 정보로 바꾼다.
 
 ```json
 {
@@ -35,10 +53,25 @@ needs_human_approval은 독립 검증이 끝난 후보에 대한 담당자 선�
   "decision": "approve",
   "approved_by": "AUTHENTICATED_REVIEWER_ID",
   "approved_at": "ISO_8601_TIMESTAMP",
-  "reason": "담당자가 확인한 선택 사유"
+  "reason": "선택한 주소를 확인한 사유"
 }
 ```
 
-validateApproval(selection, result)는 형식·요청/후보 일치·검증 상태를 검사한다. persisted=false, authentication_verified=false를 반환하며 저장/인증을 수행하지 않는다. result와 approved_by를 클라이언트 주장만으로 신뢰하면 안 된다. 전산팀이 인증한 사용자와 서버에 보관한 원본 요청·후보를 대조하고 원자적으로 1개만 저장한다.
+`validateApproval(selection, result)`는 필드, 요청·후보 ID와 검증 상태를 검사한다.
+반환값의 `persisted=false`, `authentication_verified=false`가 나타내듯 인증하거나 저장하지 않는다.
+[실행 가능한 예제](../examples/compuzone-integration.mjs)도 읽기와 검증만 수행한다.
 
-후보 레코드와 승인 레코드는 분리한다. 승인 이력의 개인정보는 사내 저장처에만 둔다. [샘플](../examples/compuzone-integration.mjs)은 읽기/검증 전용이다.
+선택 결과를 저장하는 프로그램은 인증한 사용자와 원본 요청·후보를 대조해야 한다.
+클라이언트가 보낸 `result`나 `approved_by`만으로 신뢰해서는 안 된다.
+요청당 하나의 선택을 저장하고 후보와 선택 기록을 구분하는 책임도 연결하는 프로그램에 있다.
+
+
+## 후보가 모두 맞지 않을 때
+
+연결하는 프로그램에 직접 입력란을 둘 수 있다.
+사용자는 후보가 모두 부적합하다고 판단하면 주소를 직접 넣고 저장해 적용한다.
+이 입력·저장 화면은 연결 프로그램에서 구현하는 기능이다.
+
+매처의 `validateApproval`은 기존 결과의 후보 ID 하나를 선택한 경우를 검증한다.
+직접 입력한 URL을 저장하거나 임의의 새 URL을 승인하는 API는 제공하지 않는다.
+새 주소를 매처로 확인하려면 `candidates`에 넣어 다시 검증한 뒤 그 결과를 사용한다.
