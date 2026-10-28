@@ -1,0 +1,30 @@
+{
+  "classification": "PUBLIC_SOURCE_ONLY",
+  "source": "User-provided redesign specification, 2026-10-28; no catalogue IDs or CSV rows",
+  "cases": [
+    {
+      "product_name": "[GIGABYTE] H610M K D4 제이씨현 벌크 (인텔H610/M-ATX) ⚡플래티넘 특가⚡",
+      "model": "H610M K D4"
+    },
+    {
+      "product_name": "[삼성전자] SL-M2640 흑백 레이저 프린터 (토너포함) ▶ SL-M2630 후속모델 ◀",
+      "model": "SL-M2640"
+    },
+    {
+      "product_name": "[ASUS] DUAL 지포스 RTX 3050 O6G OC D6 6GB 인텍앤컴퍼니",
+      "model": "DUAL RTX 3050 O6G OC"
+    },
+    {
+      "product_name": "[MSI] MPG 코어리퀴드 P22 360 [CPU쿨러] ★단독 특가★ [블랙]",
+      "model": "MPG 코어리퀴드 P22 360"
+    },
+    {
+      "product_name": "[MSI] H810M-B + [INTEL] Ultra5 프로세서 225F 정품박스 [결합할인]",
+      "model": null
+    },
+    {
+      "product_name": "[ATK] 유, 무선, 블루투스 마우스, ATK VXE R1 SE+ 저소음 잠자리 [펀키스 정품 ] 퍼플 후아노 (저소음)",
+      "model": "VXE R1 SE+"
+    }
+  ]
+}

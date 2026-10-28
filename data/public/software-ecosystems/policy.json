@@ -1,0 +1,7 @@
+{
+ "classification":"PUBLIC_SOURCE_ONLY",
+ "gpu_driver_providers":{"GeForce":"NVIDIA","Radeon":"AMD","Arc":"Intel"},
+ "firmware_policy":"Exact board manufacturer, model and revision; no chipset-wide substitution",
+ "keyboard_mouse_policy":"Exact supported-model list and software kind required; unknown compatibility requires review",
+ "verification_policy":"Historical mappings are candidates only; never imply a live verification date"
+}
