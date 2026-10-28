@@ -1,0 +1,5 @@
+{
+ "classification":"SYNTHETIC",
+ "marketing_terms":["특가","행사","할인","증정","당일출고","예약구매"],
+ "policy":"Classify balanced spans; preserve unknown model tokens and SE+; split only an independent bundle separator"
+}

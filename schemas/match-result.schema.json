@@ -1,0 +1,9 @@
+{
+ "$id":"coz-sw-match-result","type":"object","required":["request_id","product_name","parsed","status","approved","candidates","rejected_candidates","reason_codes","approval_contract","metrics"],
+ "properties":{
+  "request_id":{"type":"string"},"product_name":{"type":"string"},"parsed":{"type":"object"},
+  "status":{"enum":["needs_review","needs_human_approval"]},"approved":{"const":false},
+  "candidates":{"type":"array","maxItems":5,"items":{"type":"object","required":["id","url","rank","software_provider","page_type","audit_status","evidence","verified_at","reason_codes","approved"],"properties":{"id":{"type":"string"},"url":{"type":"string"},"rank":{"type":"integer","minimum":1,"maximum":5},"approved":{"const":false},"verified_at":{"type":["string","null"]},"reason_codes":{"type":"array","items":{"type":"string"}}}}},
+  "rejected_candidates":{"type":"array"},"reason_codes":{"type":"array","items":{"type":"string"}},"approval_contract":{"type":"object"},"metrics":{"type":"object"}
+ }
+}
