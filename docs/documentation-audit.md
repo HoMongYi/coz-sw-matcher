@@ -27,7 +27,7 @@
 | `docs/releases.md` | 패키지 안내 | 문장 분리, 로컬 빌드와 게시 구분 |
 | `docs/workflow.md` | 처리 흐름 | Mermaid 추가, 외부 후보·검색 생략 조건 정리 |
 | `reports/RELEASE_NOTES_v0.1.0.md` | 과거 릴리스 기록 | 179개 테스트 등 당시 사실을 유지하며 문장·일반 명칭 정리 |
-| `reports/VERIFICATION.md` | 검증 범위 | 현재 테스트 180개와 보류된 실모델 비교 구분 |
+| `reports/VERIFICATION.md` | 검증 범위 | 문서·영상 개편 당시 테스트 180개와 보류된 실모델 비교 구분 |
 | `skills/coz-sw-matcher/SKILL.md` | 에이전트 실행 기준 | 필수 검수 규칙을 유지하고 조직 가정 삭제 |
 | `skills/coz-sw-matcher/references/contracts.md` | Skill 계약 | 상태·입출력·저장 책임을 명확히 설명 |
 | `skills/coz-sw-matcher/references/policy.md` | 검수 예외 | 기술 식별 정보와 허용 범위를 보존해 윤문 |

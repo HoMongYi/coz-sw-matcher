@@ -1,3 +1,4 @@
+import {VERSION} from './version.mjs';
 import dns from 'node:dns/promises';
 import http from 'node:http';
 import https from 'node:https';
@@ -34,7 +35,7 @@ function requestPinned(u, records, options) {
   return new Promise((resolve, reject) => {
     const { method = 'GET', headers = {}, body, timeoutMs, maxBytes } = options;
     const client = u.protocol === 'https:' ? https : http;
-    const req = client.request(u, { method, signal:options.signal, headers: { 'user-agent': 'Coz-SW-Matcher/0.1.0 (+official-support-audit)', 'accept-encoding': 'identity', ...headers }, lookup(_hostname, lookupOptions, cb) {
+    const req = client.request(u, { method, signal:options.signal, headers: { 'user-agent': `Coz-SW-Matcher/${VERSION} (+official-support-audit)`, 'accept-encoding': 'identity', ...headers }, lookup(_hostname, lookupOptions, cb) {
       const chosen = records.find(r => !lookupOptions.family || r.family === lookupOptions.family) || records[0];
       if (lookupOptions.all) cb(null, [chosen]); else cb(null, chosen.address, chosen.family);
     } }, res => {
@@ -56,6 +57,7 @@ export async function safeRequest(value, options = {}) {
   const start = Date.now(), deadline = start + settings.timeoutMs; let current = value; const redirects = [];
   for (let i = 0; i <= settings.maxRedirects; i++) {
     if(settings.signal?.aborted)throw new Error('REQUEST_ABORTED');
+    if(settings.allowedDomains&&!hostAllowed(safeUrl(current).hostname,settings.allowedDomains))throw new Error('REDIRECT_DOMAIN_REJECTED');
     const remaining = deadline - Date.now(); if (remaining <= 0) throw new Error('REQUEST_TIMEOUT');
     let timer;
     const guarded = await Promise.race([guardUrl(current, settings.resolver), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('DNS_TIMEOUT')), remaining); })]).finally(() => clearTimeout(timer));
@@ -80,18 +82,26 @@ export async function requestJson(value, options = {}) {
 export function pageEvidence(response) {
   const html = response.text || '';
   const dom = parseDocument(html, { decodeEntities: true });
-  const texts = [], titles = [], links = []; let nodes = 0;
+  const texts = [], titles = [], links = [], link_details = [], controls = [], sections = [], embeds = [];
+  let nodes = 0, language = null;
+  const clean = s => s.replace(/\s+/gu,' ').trim();
+  const readable = node => node.type === 'text' ? node.data : ['script','style','template','noscript','iframe'].includes(node.name) || Object.hasOwn(node.attribs||{},'hidden') || node.attribs?.['aria-hidden']==='true' || /display\s*:\s*none|visibility\s*:\s*hidden/iu.test(node.attribs?.style||'') ? '' : (node.children||[]).map(readable).join(' ');
   function visit(node, isTitle = false) {
     if (++nodes > 100000) throw new Error('HTML_NODE_LIMIT');
     const attr = node.attribs || {};
+    if(node.name==='html')language=attr.lang||attr['xml:lang']||null;
+    if(node.name==='meta'&&attr['http-equiv']?.toLowerCase()==='content-language'&&!language)language=attr.content||null;
+    if(node.name==='iframe'&&attr.src&&embeds.length<10){try{embeds.push(new URL(attr.src,response.url).href);}catch{}}
     if (['script','style','template','noscript','iframe'].includes(node.name) || Object.hasOwn(attr,'hidden') || attr['aria-hidden'] === 'true' || /(?:display\s*:\s*none|visibility\s*:\s*hidden|opacity\s*:\s*0(?:[;\s]|$))/i.test(attr.style || '')) return;
     const titleNode = isTitle || node.name === 'title';
     if (node.type === 'text') { texts.push(node.data); if (titleNode) titles.push(node.data); }
-    if (node.name === 'a' && attr.href && links.length < 2000) { try { links.push(new URL(attr.href,response.url).href); } catch {} }
+    if (node.name === 'a' && attr.href && links.length < 2000) { try { const url=new URL(attr.href,response.url).href;links.push(url);link_details.push({url,text:clean(readable(node)).slice(0,1000),language:attr.hreflang||attr.lang||null}); } catch {} }
+    if((['button','select'].includes(node.name)||attr.role==='button'||node.name==='a'&&!attr.href&&/^download$|^다운로드$/iu.test(clean(readable(node)))||/connectButton/iu.test(attr.class||''))&&controls.length<100)controls.push(clean(readable(node)).slice(0,500));
+    if(['p','li','tr','h1','h2','h3','h4'].includes(node.name)&&sections.length<2000)sections.push(clean(readable(node)).slice(0,2000));
     for (const child of node.children || []) visit(child,titleNode);
   }
   visit(dom);
   const title = titles.join(' ').replace(/\s+/g,' ').slice(0,1000);
   const text = texts.join(' ').replace(/\s+/g,' ').slice(0,100000);
-  return { url: response.url, redirects: response.redirects, status: response.status, title, text, content_type: response.headers?.['content-type'] || '', content_disposition: response.headers?.['content-disposition'] || '', verified_at: response.verified_at, browser_required: [401,403,429,503].includes(response.status) || /captcha|just a moment|verify you are human|access denied/i.test(title), links };
+  return { url: response.url, redirects: response.redirects, status: response.status, title, text, content_type: response.headers?.['content-type'] || '', content_disposition: response.headers?.['content-disposition'] || '', verified_at: response.verified_at, browser_required: [401,403,429,503].includes(response.status) || /captcha|just a moment|verify you are human|access denied/i.test(title), links,link_details,controls,sections,language,embeds };
 }

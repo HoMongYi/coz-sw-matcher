@@ -96,17 +96,58 @@
     {
       "id": "nvidia-geforce-consumer-software",
       "name": "nvidia-geforce-consumer",
-      "canonical_page": "https://www.nvidia.com/ko-kr/software/nvidia-app",
-      "support_mode": "family-rule",
+      "canonical_page": "https://www.nvidia.com/ko-kr/software/nvidia-app/",
+      "support_mode": "explicit-model-list",
       "rule_id": "nvidia-geforce-consumer",
-      "supported_models": [],
+      "supported_models": [
+        "DUAL RTX 3050 O6G OC"
+      ],
       "excluded_models": [],
       "status": "needs-refresh",
       "verified_at": null,
       "provenance": [
         "https://www.nvidia.com/ko-kr/software/nvidia-app"
       ],
-      "software_kind": "utility"
+      "software_kind": "utility",
+      "request_kinds": [
+        "driver",
+        "support"
+      ],
+      "download_domains": [
+        "kr.download.nvidia.com"
+      ],
+      "customer_priority": 2,
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://www.nvidia.com/en-us/software/nvidia-app/faq/",
+          "models": [
+            "DUAL RTX 3050 O6G OC"
+          ],
+          "match_text": [
+            "NVIDIA app",
+            "GeForce RTX 20, 30, and 40 Series GPUs",
+            "Windows 10, Windows 11"
+          ],
+          "observed_fact": "RTX 3050 belongs to the explicitly listed RTX 30 family. This does not assert support for other GPU families.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ],
+          "target_url": "https://www.nvidia.com/ko-kr/software/nvidia-app/",
+          "software_kind": "utility",
+          "software_name": "NVIDIA App",
+          "package": {
+            "os": [
+              "Windows 10",
+              "Windows 11"
+            ],
+            "limitations": [
+              "Driver 551.52 or later; per-feature GPU requirements still apply"
+            ]
+          }
+        }
+      ]
     },
     {
       "id": "nvidia-pro-enterprise-software",

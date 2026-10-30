@@ -18,13 +18,19 @@ node bin/coz-sw-matcher.mjs match --input examples/match-request.json
   "software_provider": "NVIDIA",
   "status": "needs_review",
   "approved": false,
-  "candidates": [],
-  "reason_codes": ["NO_AUDITABLE_CANDIDATE"]
+  "candidates": [{
+    "url": "https://www.nvidia.com/ko-kr/software/nvidia-app/",
+    "audit_status": "registry_recheck_required",
+    "verified_at": null,
+    "approved": false
+  }],
+  "reason_codes": ["RECHECK_OR_REVIEW_REQUIRED"]
 }
 ```
 
-`rejected_candidates[0].reason_codes`는 `["INDEPENDENT_PAGE_REQUIRED"]`다.
-기본 실행은 오프라인이므로 독립적인 페이지 근거가 없으면 보류한다.
+기본 실행은 오프라인이다.
+Registry에서 확인된 과거 매핑은 후보로 남기지만 현재 페이지를 검증한 것으로 표시하지 않는다.
+과거 매핑도 없는 외부 URL에는 `INDEPENDENT_PAGE_REQUIRED` 사유를 남긴다.
 실패한 검색이나 소프트웨어 없음으로 해석하지 않는다.
 
 ## 온라인 검증
@@ -36,6 +42,10 @@ node bin/coz-sw-matcher.mjs match --input examples/match-request.json --online
 이 명령은 이미 입력한 후보의 페이지를 확인하며 새로 검색하지 않는다.
 외부 후보는 요청 JSON의 `candidates`에 담는다.
 빈 배열이어도 필드가 있으면 검색하지 않는다.
+
+[웹앱 요청 예시](../examples/web-app-request.json)는 HARPE MINI CORE의 Gear Link를 확인한다.
+`node bin/coz-sw-matcher.mjs match --input examples/web-app-request.json --online`으로 실행한다.
+장치를 연결하거나 설정을 저장하는 명령은 아니다.
 
 후보를 생략한 온라인 요청에서 검색하려면 `SERPAPI_API_KEY`를 설정한다.
 Luna를 함께 쓰려면 `OPENAI_API_KEY`와 확인된 `COZ_SW_MODEL`을 설정하고 `--online --luna`를 사용한다.
@@ -54,3 +64,4 @@ npm run validate
 ```
 
 다른 프로그램과 연결하려면 [입출력 계약](integration.md)을 확인한다.
+[지원 근거 문서](support-evidence.md)에는 공통 앱·웹앱·지역 모델과 세트상품의 판정 기준이 있다.

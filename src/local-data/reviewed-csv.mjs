@@ -11,17 +11,18 @@ export function inspectReviewedCsv(text){
  const rows=parse(text,{bom:true,skip_empty_lines:true,max_record_size:65536,columns:header=>{if(header.length!==COLUMNS.length||new Set(header).size!==header.length||header.some(k=>!COLUMNS.includes(k)))throw new Error('CSV_COLUMNS');return header;}});
  if(!rows.length||rows.length>10000)throw new Error('CSV_ROW_LIMIT');
  const ids=new Set(),urls=new Set(),records=[],unresolved=[],excluded=[];const vendors=loadRegistry().vendors;
- const counts={rows:rows.length,unique_ids:0,approved:0,needs_review:0,excluded:0,unique_urls:0,candidate_urls:0,status:{}};
+ const counts={rows:rows.length,unique_ids:0,mapped:0,approved:0,needs_review:0,excluded:0,unique_urls:0,candidate_urls:0,status:{}};
  for(const row of rows){
   if(!row.product_no||ids.has(row.product_no))throw new Error('DUPLICATE_PRODUCT_NO');ids.add(row.product_no);
   if(!['유지','변경','확인 필요','제외'].includes(row.status))throw new Error('INVALID_REVIEW_STATUS');
   if(row.product_name.length>1000||row.product_no.length>200||Object.values(row).some(v=>v.length>10000))throw new Error('CSV_FIELD_LIMIT');
   counts.status[row.status]=(counts.status[row.status]||0)+1;if(row.candidate_url)counts.candidate_urls++;
   const parsed=parseProductName(row,{vendors});const base={product_no:row.product_no,product_name:row.product_name,manufacturer:parsed.manufacturer,model:parsed.model,category:parsed.category,variants:parsed.variants,distributor:parsed.distributor,parser_ambiguous:parsed.ambiguous,software_kind:'support',ecosystem:resolveSoftwareTarget(parsed,'driver').ecosystem,source:'manual_verified_csv',dataset_checked_at:row.checked_at||null,verified_at:null,approved:false,evidence_url:row.evidence_url||null,locale:row.locale||null,candidate_url:row.candidate_url||null};
+  base.source_row={...row};base.editing_status=row.status;
   if(['유지','변경'].includes(row.status)){
    if(!row.sw_download)throw new Error('APPROVED_URL_REQUIRED');let u;try{u=new URL(row.sw_download);}catch{throw new Error('INVALID_DATASET_URL');}
    if(!['https:','http:'].includes(u.protocol)||u.username||u.password)throw new Error('INVALID_DATASET_URL');
-   records.push({...base,url:row.sw_download,dataset_status:row.status});urls.add(row.sw_download);counts.approved++;
+   records.push({...base,url:row.sw_download,dataset_status:row.status});urls.add(row.sw_download);counts.approved++;counts.mapped++;
   }else if(row.status==='확인 필요'){unresolved.push(base);counts.needs_review++;}
   else{excluded.push(base);counts.excluded++;}
  }
@@ -45,7 +46,7 @@ export function importReviewedCsv({input,output,classification,apply=false,priva
  const destination=checkPrivateDestination(output,privateRoot);if(fs.statSync(input).size>8_388_608)throw new Error('CSV_TOO_LARGE');
  const source=fs.readFileSync(input),source_sha256=hash(source),data=inspectReviewedCsv(source.toString('utf8'));
  const before=fs.existsSync(destination)?loadReviewedOverlay(destination).records.length:0;
- const unchanged=fs.existsSync(destination)&&loadReviewedOverlay(destination).source_sha256===source_sha256&&loadReviewedOverlay(destination).schema_version===3;
+ const unchanged=fs.existsSync(destination)&&loadReviewedOverlay(destination).source_sha256===source_sha256&&loadReviewedOverlay(destination).schema_version===4;
  const report={written:false,changed:!unchanged,before,after:data.records.length,counts:data.counts,source_sha256,classification,source_backup:null,rollback:null};
  if(!apply||unchanged)return report;
  const dir=path.dirname(destination);fs.mkdirSync(path.join(dir,'backups'),{recursive:true});
@@ -59,6 +60,6 @@ export function importReviewedCsv({input,output,classification,apply=false,priva
  }
  if(hash(fs.readFileSync(input))!==source_sha256)throw new Error('SOURCE_CHANGED');
  const temp=destination+'.'+crypto.randomUUID()+'.tmp';
- try{fs.writeFileSync(temp,JSON.stringify({schema_version:3,classification,source_sha256,...data},null,2)+'\n',{flag:'wx'});loadReviewedOverlay(temp);fs.renameSync(temp,destination);}finally{if(fs.existsSync(temp))fs.unlinkSync(temp);}
+ try{fs.writeFileSync(temp,JSON.stringify({schema_version:4,classification,source_sha256,...data},null,2)+'\n',{flag:'wx'});loadReviewedOverlay(temp);fs.renameSync(temp,destination);}finally{if(fs.existsSync(temp))fs.unlinkSync(temp);}
  return {...report,written:true,source_backup,rollback};
 }

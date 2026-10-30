@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "vendors": [
     {
       "id": "3dconnexion",
@@ -229,7 +229,8 @@
         "rog.asus.com",
         "servers.asus.com",
         "tinker-board.asus.com",
-        "www.asus.com"
+        "www.asus.com",
+        "gearlink.asus.com"
       ],
       "classification": "PUBLIC_SOURCE_ONLY",
       "provenance": [],
@@ -315,7 +316,53 @@
           "allow_hub": false
         }
       ],
-      "ecosystems": []
+      "ecosystems": [
+        {
+          "id": "asus-harpe-mini-core-gear-link",
+          "name": "Gear Link",
+          "canonical_page": "https://gearlink.asus.com/",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://rog.asus.com/kr/mice-mouse-pads/mice/ambidextrous/rog-harpe-mini-core/"
+          ],
+          "support_mode": "explicit-model-list",
+          "supported_models": [
+            "HARPE MINI CORE",
+            "ROG HARPE MINI CORE"
+          ],
+          "excluded_models": [],
+          "software_kind": "web-driver",
+          "request_kinds": [
+            "control-app",
+            "utility",
+            "support"
+          ],
+          "page_role": "web-tool",
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://rog.asus.com/kr/mice-mouse-pads/mice/ambidextrous/rog-harpe-mini-core/",
+              "target_url": "https://gearlink.asus.com/",
+              "models": [
+                "HARPE MINI CORE",
+                "ROG HARPE MINI CORE"
+              ],
+              "software_kind": "web-driver",
+              "software_name": "Gear Link",
+              "match_text": [
+                "Configure the ROG Harpe Mini Core directly on a web browser, no downloads needed!",
+                "Gear Link"
+              ],
+              "observed_fact": "Official exact-model page links Gear Link as its browser settings tool.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No device connection or firmware test"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "atk",
@@ -324,7 +371,8 @@
         "ATK"
       ],
       "domains": [
-        "www.atk.store"
+        "www.atk.store",
+        "desktop.atkgear.com"
       ],
       "classification": "PUBLIC_SOURCE_ONLY",
       "provenance": [
@@ -346,9 +394,65 @@
             "https://www.atk.store/ko-kr/pages/atk-hub"
           ],
           "support_mode": "explicit-model-list",
-          "supported_models": [],
+          "supported_models": [
+            "VXE R1 SE+"
+          ],
           "excluded_models": [],
-          "software_kind": "control-app"
+          "software_kind": "control-app",
+          "customer_priority": 3,
+          "customer_urls": [
+            "https://desktop.atkgear.com/home?hiddenNav=true"
+          ],
+          "page_role": "software-hub",
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://www.atk.store/ko-kr/products/vxe-dragonfly-r1-series-wireless-mouse",
+              "models": [
+                "VXE R1 SE+"
+              ],
+              "software_kind": "control-app",
+              "software_name": "ATK HUB",
+              "match_text": [
+                "R1 SE+",
+                "Customize DPI, polling rate, button assignments, macros, and more with ATK HUB."
+              ],
+              "observed_fact": "Official R1 series product page lists R1 SE+ and explicitly describes configuration using ATK HUB. Observed in browser; raw request failed during this run.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No device connection test",
+                "Other dongles and new models are not included"
+              ]
+            },
+            {
+              "relationship": "official-distribution",
+              "source_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+              "target_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+              "launch_url": "https://desktop.atkgear.com/home?hiddenNav=true",
+              "models": [
+                "VXE R1 SE+"
+              ],
+              "match_text": [
+                "ATK HUB"
+              ],
+              "observed_fact": "Korean official hub embeds the desktop tool; browser web version links to v3-hub.atk.store. Static HTML alone may need rendering.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "Runtime JavaScript and device setup may require a browser"
+              ]
+            }
+          ]
+        }
+      ],
+      "support_relationships": [
+        {
+          "provider": "ATK HUB",
+          "domains": [
+            "desktop.atkgear.com"
+          ],
+          "source_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+          "observed_fact": "Official Korean ATK HUB embeds https://desktop.atkgear.com/home?hiddenNav=true. The static page does not confirm every model.",
+          "checked_at": "2026-10-29"
         }
       ]
     },
@@ -360,7 +464,6 @@
         "독거미"
       ],
       "domains": [
-        "aulakeyboard.com",
         "funkeys.co.kr"
       ],
       "classification": "PUBLIC_SOURCE_ONLY",
@@ -368,7 +471,56 @@
       "verified_at": null,
       "noise_tokens": [],
       "model_aliases": [],
-      "models": [],
+      "models": [
+        {
+          "id": "aula-f87-pro",
+          "model": "F87 Pro",
+          "canonical_page": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+          "software_kind": "control-app",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269"
+          ],
+          "support_mode": "documented-relation",
+          "supported_models": [
+            "F87 Pro"
+          ],
+          "excluded_models": [],
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+              "models": [
+                "F87 Pro"
+              ],
+              "match_text": [
+                "AULA F87Pro, F99, F108 전용 소프트웨어",
+                "AULA F87 PRO Setup v2.1 20240827.exe",
+                "Windows만 지원"
+              ],
+              "observed_fact": "The distributor page provides an F87 Pro installer. F87 wired and F87 Pro V2 are not included.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ],
+              "target_url": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+              "software_name": "AULA F87 PRO",
+              "software_kind": "control-app",
+              "package": {
+                "file_name": "AULA F87 PRO Setup v2.1 20240827.exe",
+                "version": "2.1",
+                "os": [
+                  "Windows"
+                ],
+                "limitations": [
+                  "F87 wired and F87 Pro V2 not inferred"
+                ]
+              }
+            }
+          ]
+        }
+      ],
       "rules": [
         {
           "id": "aula",
@@ -384,11 +536,9 @@
           },
           "action": "model_page",
           "allowed_domains": [
-            "aulakeyboard.com",
             "funkeys.co.kr"
           ],
           "url_patterns": [
-            "^https://aulakeyboard\\.com/ko/download/.+",
             "^https://funkeys\\.co\\.kr/bbs/board\\.php\\?(?=[^#]*bo_table=download(?:&|$))[^#]*wr_id=\\d+(?:&.*)?$"
           ],
           "allow_hub": false
@@ -479,7 +629,10 @@
         "캐논"
       ],
       "domains": [
-        "asia.canon"
+        "asia.canon",
+        "ij.manual.canon",
+        "svc.kr.canon",
+        "oip.manual.canon"
       ],
       "classification": "PUBLIC_SOURCE_ONLY",
       "provenance": [],
@@ -502,6 +655,160 @@
           ],
           "excluded_models": [],
           "software_kind": "support"
+        },
+        {
+          "id": "canon-gx6092-regional",
+          "model": "GX6092",
+          "canonical_page": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+          "software_kind": "driver",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+            "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+            "https://asia.canon/en/support/0101102418?model=MAXIFY+GX6070",
+            "https://svc.kr.canon/solution/download/downloadDetailForm?ctgGb=BS&productKey=NPABS100760&solutionTab=DOWNLOADS&uniqKey=0101102402"
+          ],
+          "support_mode": "regional-driver",
+          "supported_models": [
+            "GX6092"
+          ],
+          "excluded_models": [],
+          "evidence": [
+            {
+              "relationship": "common-manual",
+              "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+              "models": [
+                "GX6092"
+              ],
+              "match_text": [
+                "GX6070",
+                "GX6092",
+                "GX6000 series"
+              ],
+              "observed_fact": "GX6070 and GX6092 share the GX6000 manual. A shared manual alone is not driver compatibility.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ]
+            },
+            {
+              "relationship": "regional-name",
+              "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+              "models": [
+                "GX6092"
+              ],
+              "match_text": [
+                "GX6070",
+                "GX6092"
+              ],
+              "observed_fact": "Regional naming context only; hardware identity and firmware are not inferred.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ]
+            },
+            {
+              "relationship": "driver-support",
+              "source_url": "https://asia.canon/en/support/0101102418?model=MAXIFY+GX6070",
+              "models": [
+                "GX6092"
+              ],
+              "match_text": [
+                "Supported Models MAXIFY GX6070",
+                "md__-win-gx6000-1_04-ea34_2.exe",
+                "File version : 1.04",
+                "27-Jul-2026",
+                "Korean"
+              ],
+              "observed_fact": "Asia GX6070 driver detail names the supported model and package. Korean is a program language, not the page language.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ],
+              "software_kind": "driver",
+              "software_name": "GX6070 MP Driver",
+              "target_url": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+              "package": {
+                "file_name": "md__-win-gx6000-1_04-ea34_2.exe",
+                "version": "1.04",
+                "published_at": "2026-07-27",
+                "os": [
+                  "Windows 11",
+                  "Windows 10"
+                ],
+                "architectures": [
+                  "x86",
+                  "x64"
+                ],
+                "languages": [
+                  "ko"
+                ],
+                "features": [
+                  "print",
+                  "scan"
+                ],
+                "limitations": [
+                  "No binary hash comparison",
+                  "No installation test",
+                  "No firmware compatibility assertion"
+                ]
+              }
+            },
+            {
+              "relationship": "driver-support",
+              "source_url": "https://svc.kr.canon/solution/download/downloadDetailForm?ctgGb=BS&productKey=NPABS100760&solutionTab=DOWNLOADS&uniqKey=0101102402",
+              "models": [
+                "GX6092"
+              ],
+              "match_text": [
+                "md__-win-gx6000-1_04-ea34_2.exe",
+                "파일버전 : 1.04",
+                "27-Jul-2026"
+              ],
+              "observed_fact": "The supplied domestic GX6092 driver URL has matching filename, version and date. The visible detail has no model name; the productKey association is the documented user reference, not a freshly rediscovered model mapping.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "Domestic productKey-to-model association supplied by user; not independently rediscovered",
+                "No binary hash comparison",
+                "No installation test"
+              ],
+              "software_kind": "driver",
+              "software_name": "GX6070 MP Driver",
+              "target_url": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+              "package": {
+                "file_name": "md__-win-gx6000-1_04-ea34_2.exe",
+                "version": "1.04",
+                "published_at": "2026-07-27",
+                "os": [
+                  "Windows 11",
+                  "Windows 10"
+                ],
+                "architectures": [
+                  "x86",
+                  "x64"
+                ],
+                "languages": [
+                  "ko"
+                ],
+                "features": [
+                  "print",
+                  "scan"
+                ],
+                "limitations": [
+                  "No binary hash comparison",
+                  "No installation test",
+                  "No firmware compatibility assertion"
+                ]
+              }
+            }
+          ],
+          "support_models": [
+            "MAXIFY GX6070",
+            "GX6070"
+          ],
+          "locale_exception": "Documented GX6092/GX6070 driver package match; Asia hub is English, package lists Korean. No firmware equivalence.",
+          "customer_priority": 2
         }
       ],
       "rules": [
@@ -524,7 +831,144 @@
           "allow_hub": false
         }
       ],
-      "ecosystems": []
+      "ecosystems": [
+        {
+          "id": "canon-g3970-manual-context",
+          "name": "G3070 series manual context",
+          "canonical_page": "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html"
+          ],
+          "support_mode": "explicit-model-list",
+          "supported_models": [],
+          "excluded_models": [],
+          "software_kind": "support",
+          "evidence": [
+            {
+              "relationship": "common-manual",
+              "source_url": "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html",
+              "models": [
+                "G3970",
+                "G3770"
+              ],
+              "match_text": [
+                "G3970",
+                "G3770",
+                "G3070 series"
+              ],
+              "observed_fact": "Shared manual only. No overseas driver URL is inferred.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "canon-ts3400-manual-context",
+          "name": "canon-ts3400-manual-context",
+          "canonical_page": "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html"
+          ],
+          "support_mode": "explicit-model-list",
+          "supported_models": [],
+          "excluded_models": [],
+          "software_kind": "support",
+          "evidence": [
+            {
+              "relationship": "common-manual",
+              "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html",
+              "models": [
+                "TS3490",
+                "TS3491",
+                "TS3492"
+              ],
+              "match_text": [
+                "TS3490",
+                "TS3491",
+                "TS3492"
+              ],
+              "observed_fact": "TS3400 manual lists regional models; no driver or firmware equivalence is asserted.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No model-specific PS3/FAX driver capability assertion",
+                "No firmware compatibility assertion"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "canon-mf750-management-context",
+          "name": "canon-mf750-management-context",
+          "canonical_page": "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/"
+          ],
+          "support_mode": "explicit-model-list",
+          "supported_models": [],
+          "excluded_models": [],
+          "software_kind": "support",
+          "evidence": [
+            {
+              "relationship": "regional-name",
+              "source_url": "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/",
+              "models": [
+                "MF756Cx",
+                "MF752Cdw"
+              ],
+              "match_text": [
+                "MF756Cx/MF754Cdw/MF752Cdw"
+              ],
+              "observed_fact": "Management-console model naming only, not proof of shared driver features.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No model-specific PS3/FAX driver capability assertion",
+                "No firmware compatibility assertion"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "canon-generic-plus-profile-context",
+          "name": "canon-generic-plus-profile-context",
+          "canonical_page": "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/"
+          ],
+          "support_mode": "explicit-model-list",
+          "supported_models": [],
+          "excluded_models": [],
+          "software_kind": "support",
+          "evidence": [
+            {
+              "relationship": "configuration-profile",
+              "source_url": "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/",
+              "models": [
+                "MF756Cx",
+                "MF752Cdw"
+              ],
+              "match_text": [
+                "List of Configuration Profiles"
+              ],
+              "observed_fact": "Configuration profiles are driver settings, not a hardware identity or firmware compatibility assertion.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No model-specific PS3/FAX driver capability assertion",
+                "No firmware compatibility assertion"
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "cherry",
@@ -738,18 +1182,50 @@
         },
         {
           "id": "corsair-general-software",
-          "name": "corsair-general",
+          "name": "iCUE",
           "canonical_page": "https://www.corsair.com/kr/ko/s/downloads",
-          "support_mode": "family-rule",
+          "support_mode": "explicit-model-list",
           "rule_id": "corsair-general",
-          "supported_models": [],
+          "supported_models": [
+            "K70 CORE",
+            "K70 CORE RGB"
+          ],
           "excluded_models": [],
           "status": "needs-refresh",
           "verified_at": null,
           "provenance": [
             "https://www.corsair.com/kr/ko/s/downloads"
           ],
-          "software_kind": "utility"
+          "software_kind": "control-app",
+          "request_kinds": [
+            "utility",
+            "support"
+          ],
+          "page_role": "software-hub",
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://www.corsair.com/kr/ko/explorer/gamer/keyboards/k70-core/",
+              "target_url": "https://www.corsair.com/kr/ko/s/downloads",
+              "models": [
+                "K70 CORE",
+                "K70 CORE RGB"
+              ],
+              "software_kind": "control-app",
+              "software_name": "iCUE",
+              "match_text": [
+                "K70 CORE RGB",
+                "iCUE 가 실행 중인 동안에는 키보드가 소프트웨어 모드로 작동",
+                "corsair.com/downloads"
+              ],
+              "observed_fact": "The exact-model manual describes iCUE configuration and links the common download hub. This is not a claim that all Corsair products or all Web Hub models are supported.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "Installer version not confirmed",
+                "Other Corsair models require their own support evidence"
+              ]
+            }
+          ]
         }
       ]
     },
@@ -760,7 +1236,8 @@
         "COX"
       ],
       "domains": [
-        "www.coxenc.co.kr"
+        "www.coxenc.co.kr",
+        "www.abko.co.kr"
       ],
       "classification": "PUBLIC_SOURCE_ONLY",
       "provenance": [
@@ -791,7 +1268,7 @@
         {
           "id": "cox-software",
           "name": "cox",
-          "canonical_page": "https://www.coxenc.co.kr/support/download.php",
+          "canonical_page": "https://www.abko.co.kr/cscenter/dataroom.php?device=pc",
           "support_mode": "family-rule",
           "rule_id": "cox",
           "supported_models": [],
@@ -799,9 +1276,20 @@
           "status": "needs-refresh",
           "verified_at": null,
           "provenance": [
-            "https://www.coxenc.co.kr/support/download.php"
+            "https://www.abko.co.kr/cscenter/dataroom.php?device=pc"
           ],
           "software_kind": "utility"
+        }
+      ],
+      "support_relationships": [
+        {
+          "provider": "ABKO",
+          "domains": [
+            "www.abko.co.kr"
+          ],
+          "source_url": "https://www.abko.co.kr/cscenter/dataroom.php?device=pc",
+          "observed_fact": "ABKO official navigation lists COX as a brand and provides the data room. Empty model results do not prove software availability.",
+          "checked_at": "2026-10-29"
         }
       ]
     },
@@ -1921,7 +2409,49 @@
       "verified_at": null,
       "noise_tokens": [],
       "model_aliases": [],
-      "models": [],
+      "models": [
+        {
+          "id": "msi-h810m-b",
+          "model": "H810M-B",
+          "canonical_page": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver"
+          ],
+          "support_mode": "documented-relation",
+          "supported_models": [
+            "H810M-B"
+          ],
+          "support_models": [
+            "PRO H810M-B"
+          ],
+          "excluded_models": [],
+          "software_kind": "support",
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+              "target_url": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+              "models": [
+                "H810M-B"
+              ],
+              "software_kind": "support",
+              "match_text": [
+                "PRO H810M-B",
+                "Driver"
+              ],
+              "observed_fact": "User-supplied exact board support reference. Current HTTP request returned 403; page software contents were not reverified.",
+              "checked_at": null,
+              "unknowns": [
+                "403: browser inspection needed",
+                "CPU software availability is not asserted",
+                "Firmware compatibility is not inferred"
+              ]
+            }
+          ]
+        }
+      ],
       "rules": [
         {
           "id": "msi-motherboard",
@@ -2050,17 +2580,58 @@
         {
           "id": "nvidia-geforce-consumer-software",
           "name": "nvidia-geforce-consumer",
-          "canonical_page": "https://www.nvidia.com/ko-kr/software/nvidia-app",
-          "support_mode": "family-rule",
+          "canonical_page": "https://www.nvidia.com/ko-kr/software/nvidia-app/",
+          "support_mode": "explicit-model-list",
           "rule_id": "nvidia-geforce-consumer",
-          "supported_models": [],
+          "supported_models": [
+            "DUAL RTX 3050 O6G OC"
+          ],
           "excluded_models": [],
           "status": "needs-refresh",
           "verified_at": null,
           "provenance": [
             "https://www.nvidia.com/ko-kr/software/nvidia-app"
           ],
-          "software_kind": "utility"
+          "software_kind": "utility",
+          "request_kinds": [
+            "driver",
+            "support"
+          ],
+          "download_domains": [
+            "kr.download.nvidia.com"
+          ],
+          "customer_priority": 2,
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://www.nvidia.com/en-us/software/nvidia-app/faq/",
+              "models": [
+                "DUAL RTX 3050 O6G OC"
+              ],
+              "match_text": [
+                "NVIDIA app",
+                "GeForce RTX 20, 30, and 40 Series GPUs",
+                "Windows 10, Windows 11"
+              ],
+              "observed_fact": "RTX 3050 belongs to the explicitly listed RTX 30 family. This does not assert support for other GPU families.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "No installation or device operation test"
+              ],
+              "target_url": "https://www.nvidia.com/ko-kr/software/nvidia-app/",
+              "software_kind": "utility",
+              "software_name": "NVIDIA App",
+              "package": {
+                "os": [
+                  "Windows 10",
+                  "Windows 11"
+                ],
+                "limitations": [
+                  "Driver 551.52 or later; per-feature GPU requirements still apply"
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "nvidia-pro-enterprise-software",
@@ -2260,7 +2831,47 @@
       "verified_at": null,
       "noise_tokens": [],
       "model_aliases": [],
-      "models": [],
+      "models": [
+        {
+          "id": "samsung-sl-c4030nd",
+          "model": "SL-C4030ND",
+          "canonical_page": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+          "software_kind": "support",
+          "status": "needs-refresh",
+          "verified_at": null,
+          "provenance": [
+            "https://www.samsung.com/sec/support/model/SL-C4030ND/"
+          ],
+          "support_mode": "documented-relation",
+          "supported_models": [
+            "SL-C4030ND"
+          ],
+          "excluded_models": [],
+          "evidence": [
+            {
+              "relationship": "software-support",
+              "source_url": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+              "models": [
+                "SL-C4030ND"
+              ],
+              "match_text": [
+                "SL-C4030ND",
+                "매뉴얼 & 다운로드"
+              ],
+              "observed_fact": "Exact-model manual/download hub is present. Individual driver version/publication dates were not confirmed.",
+              "checked_at": "2026-10-29",
+              "unknowns": [
+                "Individual file dates and versions",
+                "Dynamic download list",
+                "No installation test"
+              ],
+              "target_url": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+              "software_kind": "support"
+            }
+          ],
+          "page_role": "model-hub"
+        }
+      ],
       "rules": [
         {
           "id": "samsung-ssd-magician",

@@ -8,7 +8,8 @@
     "rog.asus.com",
     "servers.asus.com",
     "tinker-board.asus.com",
-    "www.asus.com"
+    "www.asus.com",
+    "gearlink.asus.com"
   ],
   "classification": "PUBLIC_SOURCE_ONLY",
   "provenance": [],
@@ -94,5 +95,51 @@
       "allow_hub": false
     }
   ],
-  "ecosystems": []
+  "ecosystems": [
+    {
+      "id": "asus-harpe-mini-core-gear-link",
+      "name": "Gear Link",
+      "canonical_page": "https://gearlink.asus.com/",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://rog.asus.com/kr/mice-mouse-pads/mice/ambidextrous/rog-harpe-mini-core/"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [
+        "HARPE MINI CORE",
+        "ROG HARPE MINI CORE"
+      ],
+      "excluded_models": [],
+      "software_kind": "web-driver",
+      "request_kinds": [
+        "control-app",
+        "utility",
+        "support"
+      ],
+      "page_role": "web-tool",
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://rog.asus.com/kr/mice-mouse-pads/mice/ambidextrous/rog-harpe-mini-core/",
+          "target_url": "https://gearlink.asus.com/",
+          "models": [
+            "HARPE MINI CORE",
+            "ROG HARPE MINI CORE"
+          ],
+          "software_kind": "web-driver",
+          "software_name": "Gear Link",
+          "match_text": [
+            "Configure the ROG Harpe Mini Core directly on a web browser, no downloads needed!",
+            "Gear Link"
+          ],
+          "observed_fact": "Official exact-model page links Gear Link as its browser settings tool.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No device connection or firmware test"
+          ]
+        }
+      ]
+    }
+  ]
 }

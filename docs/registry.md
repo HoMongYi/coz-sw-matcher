@@ -26,6 +26,15 @@ npm run evaluate
 checked_at은 dataset_checked_at에 보존하며 verified_at은 null이다.
 후보는 approved=false다.
 
+`유지`·`변경`은 CSV의 편집 상태다.
+실접속 검증이나 사람의 승인 완료를 뜻하지 않는다.
+overlay v4는 모든 원본 열을 `source_row`, 편집 상태를 `editing_status`에 보존한다.
+`counts.mapped`가 매핑 수이며 기존 `counts.approved`는 호환용으로 같은 수를 남기는 폐기 예정 이름이다.
+v3 overlay도 읽을 수 있지만 원본 열을 복원하려면 같은 CSV를 dry-run 후 다시 import해야 한다.
+원본 CSV나 현재 로컬 overlay를 자동으로 갱신하지 않는다.
+
+공개 레코드의 지원 관계와 지역 모델 근거는 [지원 근거](support-evidence.md)를 따른다.
+
 ## 측정 해석
 
 평가 입력과 상세 결과는 reports/local에만 저장한다.

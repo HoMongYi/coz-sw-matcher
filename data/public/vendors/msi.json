@@ -14,7 +14,49 @@
   "verified_at": null,
   "noise_tokens": [],
   "model_aliases": [],
-  "models": [],
+  "models": [
+    {
+      "id": "msi-h810m-b",
+      "model": "H810M-B",
+      "canonical_page": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver"
+      ],
+      "support_mode": "documented-relation",
+      "supported_models": [
+        "H810M-B"
+      ],
+      "support_models": [
+        "PRO H810M-B"
+      ],
+      "excluded_models": [],
+      "software_kind": "support",
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+          "target_url": "https://kr.msi.com/Motherboard/PRO-H810M-B/support#driver",
+          "models": [
+            "H810M-B"
+          ],
+          "software_kind": "support",
+          "match_text": [
+            "PRO H810M-B",
+            "Driver"
+          ],
+          "observed_fact": "User-supplied exact board support reference. Current HTTP request returned 403; page software contents were not reverified.",
+          "checked_at": null,
+          "unknowns": [
+            "403: browser inspection needed",
+            "CPU software availability is not asserted",
+            "Firmware compatibility is not inferred"
+          ]
+        }
+      ]
+    }
+  ],
   "rules": [
     {
       "id": "msi-motherboard",

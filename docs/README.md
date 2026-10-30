@@ -5,6 +5,7 @@
 
 - [처리 흐름](workflow.md): 상품명 분석부터 사람의 선택까지
 - [Registry와 평가](registry.md): 로컬 CSV 가져오기, 날짜 구분과 측정 한계
+- [지원 근거](support-evidence.md): 공통 앱·웹앱·지역 모델·세트상품의 판정 범위
 - [Provider 설정](providers.md) · [온라인 실행 예시](provider-recipes.md)
 - [Agent Skill](AGENTS.md): 설치와 wrapper 호출
 - [공식 출처](official-sources.md) · [용어](glossary.md)

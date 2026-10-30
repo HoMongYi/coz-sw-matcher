@@ -6,7 +6,6 @@
     "독거미"
   ],
   "domains": [
-    "aulakeyboard.com",
     "funkeys.co.kr"
   ],
   "classification": "PUBLIC_SOURCE_ONLY",
@@ -14,7 +13,56 @@
   "verified_at": null,
   "noise_tokens": [],
   "model_aliases": [],
-  "models": [],
+  "models": [
+    {
+      "id": "aula-f87-pro",
+      "model": "F87 Pro",
+      "canonical_page": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+      "software_kind": "control-app",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269"
+      ],
+      "support_mode": "documented-relation",
+      "supported_models": [
+        "F87 Pro"
+      ],
+      "excluded_models": [],
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+          "models": [
+            "F87 Pro"
+          ],
+          "match_text": [
+            "AULA F87Pro, F99, F108 전용 소프트웨어",
+            "AULA F87 PRO Setup v2.1 20240827.exe",
+            "Windows만 지원"
+          ],
+          "observed_fact": "The distributor page provides an F87 Pro installer. F87 wired and F87 Pro V2 are not included.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ],
+          "target_url": "https://funkeys.co.kr/bbs/board.php?bo_table=download&wr_id=269",
+          "software_name": "AULA F87 PRO",
+          "software_kind": "control-app",
+          "package": {
+            "file_name": "AULA F87 PRO Setup v2.1 20240827.exe",
+            "version": "2.1",
+            "os": [
+              "Windows"
+            ],
+            "limitations": [
+              "F87 wired and F87 Pro V2 not inferred"
+            ]
+          }
+        }
+      ]
+    }
+  ],
   "rules": [
     {
       "id": "aula",
@@ -30,11 +78,9 @@
       },
       "action": "model_page",
       "allowed_domains": [
-        "aulakeyboard.com",
         "funkeys.co.kr"
       ],
       "url_patterns": [
-        "^https://aulakeyboard\\.com/ko/download/.+",
         "^https://funkeys\\.co\\.kr/bbs/board\\.php\\?(?=[^#]*bo_table=download(?:&|$))[^#]*wr_id=\\d+(?:&.*)?$"
       ],
       "allow_hub": false

@@ -1,3 +1,4 @@
+import {VERSION} from './version.mjs';
 import { McpServer } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod';
@@ -5,7 +6,7 @@ const product={input_id:z.string().max(200).optional(),product_name:z.string().m
 const generic=z.object({}).passthrough();
 const resultSchema=z.object({input_id:z.string().nullable(),original_name:z.string(),normalized:generic,decision:z.enum(['fill','blank','review']),primary:z.object({url:z.string(),software_kind:z.string()}).nullable(),secondary:z.array(generic),reason_codes:z.array(z.string()),evidence:z.array(generic),verified_at:z.string().nullable()});
 export function createMcpServer(engine,{allowResearch=false}={}){
-  const server=new McpServer({name:'hardware-software-url-finder',version:'0.1.0'});
+  const server=new McpServer({name:'hardware-software-url-finder',version:VERSION});
   const register=(name,description,inputSchema,outputSchema,handler,openWorld=false)=>server.registerTool(name,{description,inputSchema,outputSchema,annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:!openWorld,openWorldHint:openWorld}},async args=>{
     try{const value=await handler(args);return{content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};}catch{return{content:[{type:'text',text:'INVALID_REQUEST'}],isError:true};}
   });

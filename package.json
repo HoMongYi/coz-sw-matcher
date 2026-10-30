@@ -1,6 +1,6 @@
 {
   "name": "coz-sw-matcher",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Compuzone product-name parsing and official software URL candidates with human approval",
   "type": "module",
   "license": "MIT",
@@ -29,6 +29,7 @@
     "config",
     "skills",
     "examples/match-request.json",
+    "examples/web-app-request.json",
     "examples/compuzone-integration.mjs",
     "docs",
     "reports/VERIFICATION.md",
@@ -37,7 +38,8 @@
     "CONTRIBUTING.md",
     "CHANGELOG.md",
     "LICENSE",
-    "reports/RELEASE_NOTES_v0.1.0.md"
+    "reports/RELEASE_NOTES_v0.1.0.md",
+    "reports/RELEASE_NOTES_v0.2.0.md"
   ],
   "scripts": {
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",

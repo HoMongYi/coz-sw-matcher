@@ -7,12 +7,13 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 root = Path(__file__).resolve().parent.parent
-dist = root / "dist" / "v0.1.0"
+version = json.loads((root / "package.json").read_text(encoding="utf-8"))["version"]
+dist = root / "dist" / ("v" + version)
 expected = {
-    "coz-sw-matcher-v0.1.0-source.zip",
-    "coz-sw-matcher-agent-skill-v0.1.0.zip",
-    "coz-sw-matcher-codex-plugin-v0.1.0.zip",
-    "coz-sw-matcher-0.1.0.tgz",
+    f"coz-sw-matcher-v{version}-source.zip",
+    f"coz-sw-matcher-agent-skill-v{version}.zip",
+    f"coz-sw-matcher-codex-plugin-v{version}.zip",
+    f"coz-sw-matcher-{version}.tgz",
 }
 manifest = json.loads((dist / "release-manifest.json").read_text(encoding="utf-8"))
 assert manifest["license"] == "MIT"
@@ -105,6 +106,8 @@ for name in sorted(expected):
         prefix = "coz-sw-matcher/runtime/" if name.startswith("coz-sw-matcher-codex-plugin") else "package/" if name.endswith(".tgz") else ""
         for media in ["docs/media/cover.webp", "docs/media/demo-preview.gif"]:
             assert files[prefix + media] == (root / media).read_bytes()
+        for example in ["examples/match-request.json", "examples/web-app-request.json"]:
+            assert files[prefix + example] == (root / example).read_bytes()
     results.append({"name": name, "entries": len(files), "status": "Passed", "sha256": actual_hash})
 assert not findings, findings
 print(json.dumps({"status": "Passed", "source_layout": "flat", "leak_findings": 0, "secret_findings": 0, "artifacts": results}, indent=2))

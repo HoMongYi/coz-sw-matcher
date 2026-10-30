@@ -1,9 +1,440 @@
 {
- "$id":"coz-sw-match-result","type":"object","required":["request_id","product_name","parsed","status","approved","candidates","rejected_candidates","reason_codes","approval_contract","metrics"],
- "properties":{
-  "request_id":{"type":"string"},"product_name":{"type":"string"},"parsed":{"type":"object"},
-  "status":{"enum":["needs_review","needs_human_approval"]},"approved":{"const":false},
-  "candidates":{"type":"array","maxItems":5,"items":{"type":"object","required":["id","url","rank","software_provider","page_type","audit_status","evidence","verified_at","reason_codes","approved"],"properties":{"id":{"type":"string"},"url":{"type":"string"},"rank":{"type":"integer","minimum":1,"maximum":5},"approved":{"const":false},"verified_at":{"type":["string","null"]},"reason_codes":{"type":"array","items":{"type":"string"}}}}},
-  "rejected_candidates":{"type":"array"},"reason_codes":{"type":"array","items":{"type":"string"}},"approval_contract":{"type":"object"},"metrics":{"type":"object"}
- }
+  "$id": "coz-sw-match-result",
+  "type": "object",
+  "required": [
+    "request_id",
+    "product_name",
+    "parsed",
+    "status",
+    "approved",
+    "candidates",
+    "rejected_candidates",
+    "reason_codes",
+    "approval_contract",
+    "metrics"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "parsed": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "needs_review",
+        "needs_human_approval"
+      ]
+    },
+    "approved": {
+      "const": false
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "url",
+          "rank",
+          "software_provider",
+          "page_type",
+          "audit_status",
+          "evidence",
+          "verified_at",
+          "reason_codes",
+          "approved"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "approved": {
+            "const": false
+          },
+          "verified_at": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "software_kind": {
+            "type": "string"
+          },
+          "software_scope": {
+            "enum": [
+              "model-specific",
+              "gpu-family",
+              "shared-app",
+              "web-app",
+              "firmware",
+              "regional-driver"
+            ]
+          },
+          "page_type": {
+            "enum": [
+              "software-download",
+              "support-with-downloads",
+              "web-app",
+              "software-hub",
+              "product-description",
+              "sales",
+              "unknown"
+            ]
+          },
+          "verification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "access",
+              "model_support",
+              "software_target"
+            ],
+            "properties": {
+              "access": {
+                "enum": [
+                  "not_checked",
+                  "reachable",
+                  "browser_required",
+                  "failed"
+                ]
+              },
+              "model_support": {
+                "enum": [
+                  "unconfirmed",
+                  "confirmed"
+                ]
+              },
+              "software_target": {
+                "enum": [
+                  "unconfirmed",
+                  "web-tool",
+                  "linked-web-tool",
+                  "model-hub",
+                  "download",
+                  "download-control",
+                  "driver-detail"
+                ]
+              }
+            }
+          },
+          "support_evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "relationship",
+                "source_url",
+                "models",
+                "observed_fact",
+                "verification"
+              ],
+              "properties": {
+                "relationship": {
+                  "type": "string"
+                },
+                "source_url": {
+                  "type": "string"
+                },
+                "models": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "observed_fact": {
+                  "type": "string"
+                },
+                "verification": {
+                  "enum": [
+                    "live_observed",
+                    "recheck_required"
+                  ]
+                },
+                "verified_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "locale": {
+            "type": "object",
+            "properties": {
+              "page_language": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "korean_available": {
+                "type": "boolean"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "software_languages": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "exception_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "rejected_candidates": {
+      "type": "array"
+    },
+    "reason_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "approval_contract": {
+      "type": "object"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "component_results": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "index",
+          "availability",
+          "candidates",
+          "approved"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "availability": {
+            "enum": [
+              "available",
+              "none_confirmed",
+              "unknown"
+            ]
+          },
+          "candidates": {
+            "type": "array",
+            "maxItems": 5,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "url",
+                "rank",
+                "software_provider",
+                "page_type",
+                "audit_status",
+                "evidence",
+                "verified_at",
+                "reason_codes",
+                "approved"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "rank": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5
+                },
+                "approved": {
+                  "const": false
+                },
+                "verified_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "reason_codes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "software_kind": {
+                  "type": "string"
+                },
+                "software_scope": {
+                  "enum": [
+                    "model-specific",
+                    "gpu-family",
+                    "shared-app",
+                    "web-app",
+                    "firmware",
+                    "regional-driver"
+                  ]
+                },
+                "page_type": {
+                  "enum": [
+                    "software-download",
+                    "support-with-downloads",
+                    "web-app",
+                    "software-hub",
+                    "product-description",
+                    "sales",
+                    "unknown"
+                  ]
+                },
+                "verification": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "access",
+                    "model_support",
+                    "software_target"
+                  ],
+                  "properties": {
+                    "access": {
+                      "enum": [
+                        "not_checked",
+                        "reachable",
+                        "browser_required",
+                        "failed"
+                      ]
+                    },
+                    "model_support": {
+                      "enum": [
+                        "unconfirmed",
+                        "confirmed"
+                      ]
+                    },
+                    "software_target": {
+                      "enum": [
+                        "unconfirmed",
+                        "web-tool",
+                        "linked-web-tool",
+                        "model-hub",
+                        "download",
+                        "download-control",
+                        "driver-detail"
+                      ]
+                    }
+                  }
+                },
+                "support_evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "relationship",
+                      "source_url",
+                      "models",
+                      "observed_fact",
+                      "verification"
+                    ],
+                    "properties": {
+                      "relationship": {
+                        "type": "string"
+                      },
+                      "source_url": {
+                        "type": "string"
+                      },
+                      "models": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "observed_fact": {
+                        "type": "string"
+                      },
+                      "verification": {
+                        "enum": [
+                          "live_observed",
+                          "recheck_required"
+                        ]
+                      },
+                      "verified_at": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "locale": {
+                  "type": "object",
+                  "properties": {
+                    "page_language": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "korean_available": {
+                      "type": "boolean"
+                    },
+                    "verified": {
+                      "type": "boolean"
+                    },
+                    "software_languages": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "exception_reason": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "approved": {
+            "const": false
+          }
+        }
+      }
+    },
+    "target_component": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
 }

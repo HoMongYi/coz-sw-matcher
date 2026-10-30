@@ -6,7 +6,10 @@
     "캐논"
   ],
   "domains": [
-    "asia.canon"
+    "asia.canon",
+    "ij.manual.canon",
+    "svc.kr.canon",
+    "oip.manual.canon"
   ],
   "classification": "PUBLIC_SOURCE_ONLY",
   "provenance": [],
@@ -29,6 +32,160 @@
       ],
       "excluded_models": [],
       "software_kind": "support"
+    },
+    {
+      "id": "canon-gx6092-regional",
+      "model": "GX6092",
+      "canonical_page": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+      "software_kind": "driver",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+        "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+        "https://asia.canon/en/support/0101102418?model=MAXIFY+GX6070",
+        "https://svc.kr.canon/solution/download/downloadDetailForm?ctgGb=BS&productKey=NPABS100760&solutionTab=DOWNLOADS&uniqKey=0101102402"
+      ],
+      "support_mode": "regional-driver",
+      "supported_models": [
+        "GX6092"
+      ],
+      "excluded_models": [],
+      "evidence": [
+        {
+          "relationship": "common-manual",
+          "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+          "models": [
+            "GX6092"
+          ],
+          "match_text": [
+            "GX6070",
+            "GX6092",
+            "GX6000 series"
+          ],
+          "observed_fact": "GX6070 and GX6092 share the GX6000 manual. A shared manual alone is not driver compatibility.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ]
+        },
+        {
+          "relationship": "regional-name",
+          "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/GX6000%20series/KO/CNT/Top.html",
+          "models": [
+            "GX6092"
+          ],
+          "match_text": [
+            "GX6070",
+            "GX6092"
+          ],
+          "observed_fact": "Regional naming context only; hardware identity and firmware are not inferred.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ]
+        },
+        {
+          "relationship": "driver-support",
+          "source_url": "https://asia.canon/en/support/0101102418?model=MAXIFY+GX6070",
+          "models": [
+            "GX6092"
+          ],
+          "match_text": [
+            "Supported Models MAXIFY GX6070",
+            "md__-win-gx6000-1_04-ea34_2.exe",
+            "File version : 1.04",
+            "27-Jul-2026",
+            "Korean"
+          ],
+          "observed_fact": "Asia GX6070 driver detail names the supported model and package. Korean is a program language, not the page language.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ],
+          "software_kind": "driver",
+          "software_name": "GX6070 MP Driver",
+          "target_url": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+          "package": {
+            "file_name": "md__-win-gx6000-1_04-ea34_2.exe",
+            "version": "1.04",
+            "published_at": "2026-07-27",
+            "os": [
+              "Windows 11",
+              "Windows 10"
+            ],
+            "architectures": [
+              "x86",
+              "x64"
+            ],
+            "languages": [
+              "ko"
+            ],
+            "features": [
+              "print",
+              "scan"
+            ],
+            "limitations": [
+              "No binary hash comparison",
+              "No installation test",
+              "No firmware compatibility assertion"
+            ]
+          }
+        },
+        {
+          "relationship": "driver-support",
+          "source_url": "https://svc.kr.canon/solution/download/downloadDetailForm?ctgGb=BS&productKey=NPABS100760&solutionTab=DOWNLOADS&uniqKey=0101102402",
+          "models": [
+            "GX6092"
+          ],
+          "match_text": [
+            "md__-win-gx6000-1_04-ea34_2.exe",
+            "파일버전 : 1.04",
+            "27-Jul-2026"
+          ],
+          "observed_fact": "The supplied domestic GX6092 driver URL has matching filename, version and date. The visible detail has no model name; the productKey association is the documented user reference, not a freshly rediscovered model mapping.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "Domestic productKey-to-model association supplied by user; not independently rediscovered",
+            "No binary hash comparison",
+            "No installation test"
+          ],
+          "software_kind": "driver",
+          "software_name": "GX6070 MP Driver",
+          "target_url": "https://asia.canon/en/support/MAXIFY%20GX6070/model",
+          "package": {
+            "file_name": "md__-win-gx6000-1_04-ea34_2.exe",
+            "version": "1.04",
+            "published_at": "2026-07-27",
+            "os": [
+              "Windows 11",
+              "Windows 10"
+            ],
+            "architectures": [
+              "x86",
+              "x64"
+            ],
+            "languages": [
+              "ko"
+            ],
+            "features": [
+              "print",
+              "scan"
+            ],
+            "limitations": [
+              "No binary hash comparison",
+              "No installation test",
+              "No firmware compatibility assertion"
+            ]
+          }
+        }
+      ],
+      "support_models": [
+        "MAXIFY GX6070",
+        "GX6070"
+      ],
+      "locale_exception": "Documented GX6092/GX6070 driver package match; Asia hub is English, package lists Korean. No firmware equivalence.",
+      "customer_priority": 2
     }
   ],
   "rules": [
@@ -51,5 +208,142 @@
       "allow_hub": false
     }
   ],
-  "ecosystems": []
+  "ecosystems": [
+    {
+      "id": "canon-g3970-manual-context",
+      "name": "G3070 series manual context",
+      "canonical_page": "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [],
+      "excluded_models": [],
+      "software_kind": "support",
+      "evidence": [
+        {
+          "relationship": "common-manual",
+          "source_url": "https://ij.manual.canon/ij/webmanual/Manual/All/G3070%20series/EN/CNT/Top.html",
+          "models": [
+            "G3970",
+            "G3770"
+          ],
+          "match_text": [
+            "G3970",
+            "G3770",
+            "G3070 series"
+          ],
+          "observed_fact": "Shared manual only. No overseas driver URL is inferred.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No installation or device operation test"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canon-ts3400-manual-context",
+      "name": "canon-ts3400-manual-context",
+      "canonical_page": "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [],
+      "excluded_models": [],
+      "software_kind": "support",
+      "evidence": [
+        {
+          "relationship": "common-manual",
+          "source_url": "https://ij.manual.canon/ij/webmanual/Manual/M/TS3400%20series/EN/CNT/Top.html",
+          "models": [
+            "TS3490",
+            "TS3491",
+            "TS3492"
+          ],
+          "match_text": [
+            "TS3490",
+            "TS3491",
+            "TS3492"
+          ],
+          "observed_fact": "TS3400 manual lists regional models; no driver or firmware equivalence is asserted.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No model-specific PS3/FAX driver capability assertion",
+            "No firmware compatibility assertion"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canon-mf750-management-context",
+      "name": "canon-mf750-management-context",
+      "canonical_page": "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [],
+      "excluded_models": [],
+      "software_kind": "support",
+      "evidence": [
+        {
+          "relationship": "regional-name",
+          "source_url": "https://oip.manual.canon/USRMB-1155-zz-DS-enUV/",
+          "models": [
+            "MF756Cx",
+            "MF752Cdw"
+          ],
+          "match_text": [
+            "MF756Cx/MF754Cdw/MF752Cdw"
+          ],
+          "observed_fact": "Management-console model naming only, not proof of shared driver features.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No model-specific PS3/FAX driver capability assertion",
+            "No firmware compatibility assertion"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "canon-generic-plus-profile-context",
+      "name": "canon-generic-plus-profile-context",
+      "canonical_page": "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [],
+      "excluded_models": [],
+      "software_kind": "support",
+      "evidence": [
+        {
+          "relationship": "configuration-profile",
+          "source_url": "https://oip.manual.canon/USRMA-4441-zz-DR-enUV/",
+          "models": [
+            "MF756Cx",
+            "MF752Cdw"
+          ],
+          "match_text": [
+            "List of Configuration Profiles"
+          ],
+          "observed_fact": "Configuration profiles are driver settings, not a hardware identity or firmware compatibility assertion.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No model-specific PS3/FAX driver capability assertion",
+            "No firmware compatibility assertion"
+          ]
+        }
+      ]
+    }
+  ]
 }

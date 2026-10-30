@@ -17,7 +17,47 @@
   "verified_at": null,
   "noise_tokens": [],
   "model_aliases": [],
-  "models": [],
+  "models": [
+    {
+      "id": "samsung-sl-c4030nd",
+      "model": "SL-C4030ND",
+      "canonical_page": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+      "software_kind": "support",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://www.samsung.com/sec/support/model/SL-C4030ND/"
+      ],
+      "support_mode": "documented-relation",
+      "supported_models": [
+        "SL-C4030ND"
+      ],
+      "excluded_models": [],
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+          "models": [
+            "SL-C4030ND"
+          ],
+          "match_text": [
+            "SL-C4030ND",
+            "매뉴얼 & 다운로드"
+          ],
+          "observed_fact": "Exact-model manual/download hub is present. Individual driver version/publication dates were not confirmed.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "Individual file dates and versions",
+            "Dynamic download list",
+            "No installation test"
+          ],
+          "target_url": "https://www.samsung.com/sec/support/model/SL-C4030ND/",
+          "software_kind": "support"
+        }
+      ],
+      "page_role": "model-hub"
+    }
+  ],
   "rules": [
     {
       "id": "samsung-ssd-magician",

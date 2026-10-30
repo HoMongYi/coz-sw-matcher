@@ -4,15 +4,19 @@ import {createMatcherHttpServer} from '../src/interfaces/http.mjs';
 import {createMatcherMcpServer} from '../src/interfaces/mcp.mjs';
 import {main} from '../bin/coz-sw-matcher.mjs';
 import path from 'node:path';import {fileURLToPath} from 'node:url';import {execFileSync} from 'node:child_process';
+import fs from 'node:fs';
+const version=JSON.parse(fs.readFileSync(new URL('../package.json',import.meta.url),'utf8')).version;
 const input={product_name:'[GIGABYTE] H610M K D4 제이씨현 벌크'};
 test('CLI parse and match expose Compuzone contract with no automatic approval',async()=>{
  let text='';await main(['parse',input.product_name],{write:s=>text+=s});assert.equal(JSON.parse(text).model,'H610M K D4');
  text='';await main(['match',input.product_name],{write:s=>text+=s});const r=JSON.parse(text);assert.equal(r.approved,false);assert.ok(r.candidates.length<=5);
+ text='';await main(['--help'],{write:s=>text+=s});assert.ok(text.includes('Coz SW Matcher '+version));
 });
 test('HTTP returns matcher contract, enforces host/origin/auth/limits and has no approval mutation',async()=>{
  const s=createMatcherHttpServer(createMatcher(),{token:'synthetic-token',maxBytes:2000});await new Promise(r=>s.listen(0,'127.0.0.1',r));
  try{const base=`http://127.0.0.1:${s.address().port}`;const post=(p,b,auth=true)=>fetch(base+p,{method:'POST',headers:{'content-type':'application/json',...(auth?{authorization:'Bearer synthetic-token'}:{})},body:JSON.stringify(b)});
   assert.equal((await fetch(base+'/health')).status,401);assert.equal((await post('/v1/match',input,false)).status,401);
+  assert.equal((await(await fetch(base+'/health',{headers:{authorization:'Bearer synthetic-token'}})).json()).version,version);
   const r=await(await post('/v1/match',input)).json();assert.equal(r.approved,false);assert.equal(r.parsed.model,'H610M K D4');
   assert.equal((await post('/v1/approvals',{})).status,404);assert.equal((await post('/v1/match',{product_name:'x'.repeat(2500)})).status,413);
   assert.equal((await fetch(base+'/health',{headers:{origin:'https://example.com',authorization:'Bearer synthetic-token'}})).status,403);

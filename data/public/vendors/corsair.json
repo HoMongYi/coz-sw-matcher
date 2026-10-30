@@ -72,18 +72,50 @@
     },
     {
       "id": "corsair-general-software",
-      "name": "corsair-general",
+      "name": "iCUE",
       "canonical_page": "https://www.corsair.com/kr/ko/s/downloads",
-      "support_mode": "family-rule",
+      "support_mode": "explicit-model-list",
       "rule_id": "corsair-general",
-      "supported_models": [],
+      "supported_models": [
+        "K70 CORE",
+        "K70 CORE RGB"
+      ],
       "excluded_models": [],
       "status": "needs-refresh",
       "verified_at": null,
       "provenance": [
         "https://www.corsair.com/kr/ko/s/downloads"
       ],
-      "software_kind": "utility"
+      "software_kind": "control-app",
+      "request_kinds": [
+        "utility",
+        "support"
+      ],
+      "page_role": "software-hub",
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://www.corsair.com/kr/ko/explorer/gamer/keyboards/k70-core/",
+          "target_url": "https://www.corsair.com/kr/ko/s/downloads",
+          "models": [
+            "K70 CORE",
+            "K70 CORE RGB"
+          ],
+          "software_kind": "control-app",
+          "software_name": "iCUE",
+          "match_text": [
+            "K70 CORE RGB",
+            "iCUE 가 실행 중인 동안에는 키보드가 소프트웨어 모드로 작동",
+            "corsair.com/downloads"
+          ],
+          "observed_fact": "The exact-model manual describes iCUE configuration and links the common download hub. This is not a claim that all Corsair products or all Web Hub models are supported.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "Installer version not confirmed",
+            "Other Corsair models require their own support evidence"
+          ]
+        }
+      ]
     }
   ]
 }

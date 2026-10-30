@@ -1,3 +1,4 @@
+import {VERSION} from './version.mjs';
 import http from 'node:http';
 import crypto from 'node:crypto';
 export function createHttpServer(engine,{token,allowResearch=false,maxBytes=1_048_576,maxConcurrent=2}={}){
@@ -10,7 +11,7 @@ export function createHttpServer(engine,{token,allowResearch=false,maxBytes=1_04
     if(running>=maxConcurrent){send(429,{error:'BUSY'});return;}running++;
     try{
       const u=new URL(req.url,'http://localhost');
-      if(req.method==='GET'&&u.pathname==='/health'){send(200,{status:'ok',version:'0.1.0',mode:allowResearch?'research-enabled':'offline'});return;}
+      if(req.method==='GET'&&u.pathname==='/health'){send(200,{status:'ok',version:VERSION,mode:allowResearch?'research-enabled':'offline'});return;}
       if(req.method==='GET'&&u.pathname.startsWith('/v1/vendors/')){const v=engine.registry.vendors.find(v=>v.id===u.pathname.slice('/v1/vendors/'.length));send(v?200:404,v||{error:'NOT_FOUND'});return;}
       if(req.method==='GET'&&u.pathname.startsWith('/v1/ecosystems/')){const e=engine.registry.vendors.flatMap(v=>v.ecosystems).find(e=>e.id===u.pathname.slice('/v1/ecosystems/'.length));send(e?200:404,e||{error:'NOT_FOUND'});return;}
       if(req.method!=='POST'){send(404,{error:'NOT_FOUND'});return;}

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {VERSION} from '../src/version.mjs';
 import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
 import {createMatcher,parseProductName,loadReviewedOverlay,SerpApiSearchProvider,LunaRanker,approvalContract} from '../src/index.mjs';
 export async function main(argv=process.argv.slice(2),{write=s=>process.stdout.write(s),matcher:injected}={}){
@@ -7,7 +8,7 @@ export async function main(argv=process.argv.slice(2),{write=s=>process.stdout.w
   else if(['--input','--output','--overlay','--kind','--port','--host','--target-component'].includes(a)){if(!argv[i+1]||argv[i+1].startsWith('--'))throw new Error('OPTION_VALUE_REQUIRED');flags[a.slice(2)]=argv[++i];}
   else if(a.startsWith('--'))throw new Error('UNKNOWN_OPTION');else args.push(a);
  }
- if(flags.help||!args.length){write('Coz SW Matcher 0.1.0\nparse NAME\nmatch NAME [--input request.json] [--kind driver] [--overlay data/private/reviewed-registry.json] [--online] [--luna] [--output result.json]\nserve [--host 127.0.0.1] [--port 8787] [--online]\nmcp [--online]\napproval-contract\n');return;}
+ if(flags.help||!args.length){write('Coz SW Matcher '+VERSION+'\nparse NAME\nmatch NAME [--input request.json] [--kind driver] [--overlay data/private/reviewed-registry.json] [--online] [--luna] [--output result.json]\nserve [--host 127.0.0.1] [--port 8787] [--online]\nmcp [--online]\napproval-contract\n');return;}
  if(flags.luna&&!flags.online)throw new Error('LUNA_REQUIRES_ONLINE');
  const matcher=injected||createMatcher({overlay:flags.overlay?loadReviewedOverlay(flags.overlay):undefined,search:flags.online&&process.env.SERPAPI_API_KEY?new SerpApiSearchProvider():undefined,ranker:flags.luna?new LunaRanker():undefined,minIntervalMs:flags.online?250:0});
  const emit=value=>{const text=JSON.stringify(value,null,2)+'\n';if(flags.output)fs.writeFileSync(path.resolve(flags.output),text,{flag:'wx'});else write(text);};

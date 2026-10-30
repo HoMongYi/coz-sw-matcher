@@ -5,7 +5,8 @@
     "COX"
   ],
   "domains": [
-    "www.coxenc.co.kr"
+    "www.coxenc.co.kr",
+    "www.abko.co.kr"
   ],
   "classification": "PUBLIC_SOURCE_ONLY",
   "provenance": [
@@ -36,7 +37,7 @@
     {
       "id": "cox-software",
       "name": "cox",
-      "canonical_page": "https://www.coxenc.co.kr/support/download.php",
+      "canonical_page": "https://www.abko.co.kr/cscenter/dataroom.php?device=pc",
       "support_mode": "family-rule",
       "rule_id": "cox",
       "supported_models": [],
@@ -44,9 +45,20 @@
       "status": "needs-refresh",
       "verified_at": null,
       "provenance": [
-        "https://www.coxenc.co.kr/support/download.php"
+        "https://www.abko.co.kr/cscenter/dataroom.php?device=pc"
       ],
       "software_kind": "utility"
+    }
+  ],
+  "support_relationships": [
+    {
+      "provider": "ABKO",
+      "domains": [
+        "www.abko.co.kr"
+      ],
+      "source_url": "https://www.abko.co.kr/cscenter/dataroom.php?device=pc",
+      "observed_fact": "ABKO official navigation lists COX as a brand and provides the data room. Empty model results do not prove software availability.",
+      "checked_at": "2026-10-29"
     }
   ]
 }

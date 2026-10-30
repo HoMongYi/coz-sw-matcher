@@ -1,8 +1,10 @@
+import {VERSION} from './version.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateVendor } from './contracts.mjs';
 import { identityKey as fold } from './identity.mjs';
+import {safeUrl,hostAllowed} from './network.mjs';
 export const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const readJson = p => JSON.parse(fs.readFileSync(p, 'utf8'));
 export function validateRegistry(vendors, { privateOverlay = false } = {}) {
@@ -11,12 +13,19 @@ export function validateRegistry(vendors, { privateOverlay = false } = {}) {
     if (!validateVendor(v)) { errors.push(`SCHEMA:${v.id || 'unknown'}`); continue; }
     if (ids.has(v.id)) errors.push(`DUPLICATE_VENDOR:${v.id}`); ids.add(v.id);
     if (!privateOverlay && v.classification === 'UNKNOWN') errors.push(`UNKNOWN_PUBLIC_SOURCE:${v.id}`);
+    for(const relationship of v.support_relationships||[]){
+      try{const u=safeUrl(relationship.source_url);if(u.protocol!=='https:'||!hostAllowed(u.hostname,v.domains)||!relationship.observed_fact.trim()||!/^\d{4}-\d{2}-\d{2}$/u.test(relationship.checked_at))errors.push(`SUPPORT_RELATIONSHIP:${v.id}`);}catch{errors.push(`SUPPORT_RELATIONSHIP:${v.id}`);}
+    }
     for (const a of v.model_aliases) { const key = `${v.id}:${fold(a.from)}`; if (aliases.has(key) && aliases.get(key) !== fold(a.to)) errors.push(`ALIAS_CONFLICT:${v.id}`); aliases.set(key, fold(a.to)); }
     for (const record of [...v.models, ...v.ecosystems]) {
       if (records.has(record.id)) errors.push(`DUPLICATE_RECORD:${record.id}`); records.add(record.id);
       try { const u = new URL(record.canonical_page); if (!['https:', 'http:'].includes(u.protocol) || u.username || u.password || !v.domains.some(d => u.hostname === d || u.hostname.endsWith('.' + d))) errors.push(`RECORD_DOMAIN:${record.id}`); } catch { errors.push(`RECORD_URL:${record.id}`); }
       if (record.status === 'active' && (!record.verified_at || !record.provenance.length)) errors.push(`UNVERIFIED_ACTIVE:${record.id}`);
       if (record.verified_at && (!/^\d{4}-\d{2}-\d{2}$/.test(record.verified_at) || !Number.isFinite(Date.parse(record.verified_at)))) errors.push(`INVALID_DATE:${record.id}`);
+      for(const e of record.evidence||[]){
+        try{const u=safeUrl(e.source_url);if(u.protocol!=='https:'||!hostAllowed(u.hostname,v.domains)||!e.observed_fact.trim()||!e.match_text.length||e.match_text.some(t=>!t.trim())||e.checked_at&&!/^\d{4}-\d{2}-\d{2}$/u.test(e.checked_at))errors.push(`SUPPORT_EVIDENCE:${record.id}`);}catch{errors.push(`SUPPORT_EVIDENCE:${record.id}`);}
+        if(e.target_url&&![record.canonical_page,...(record.customer_urls||[])].includes(e.target_url))errors.push(`EVIDENCE_TARGET:${record.id}`);
+      }
       if (record.model) { const key = `${v.id}:${fold(record.model)}`; if (exact.has(key) && exact.get(key) !== record.canonical_page) errors.push(`EXACT_CONFLICT:${record.id}`); exact.set(key, record.canonical_page); }
     }
     for (const r of v.rules) {
@@ -45,5 +54,5 @@ export function loadRegistry({ publicDir = path.join(ROOT, 'data/public/vendors'
 export function registryStatus(registry) {
   const vendors = registry.vendors;
   const records = vendors.flatMap(v => [...v.models, ...v.ecosystems]);
-  return { version: '0.1.0', vendors: vendors.length, domains: new Set(vendors.flatMap(v => v.domains)).size, models: vendors.reduce((n,v) => n+v.models.length,0), aliases: vendors.reduce((n,v) => n+v.model_aliases.length,0), rules: vendors.reduce((n,v) => n+v.rules.length,0), ecosystems: vendors.reduce((n,v) => n+v.ecosystems.length,0), needs_refresh: records.filter(r => r.status === 'needs-refresh').length, private_overlay_enabled: !!registry.privateVendors?.length };
+  return { version: VERSION, vendors: vendors.length, domains: new Set(vendors.flatMap(v => v.domains)).size, models: vendors.reduce((n,v) => n+v.models.length,0), aliases: vendors.reduce((n,v) => n+v.model_aliases.length,0), rules: vendors.reduce((n,v) => n+v.rules.length,0), ecosystems: vendors.reduce((n,v) => n+v.ecosystems.length,0), needs_refresh: records.filter(r => r.status === 'needs-refresh').length, private_overlay_enabled: !!registry.privateVendors?.length };
 }

@@ -1,3 +1,4 @@
+import {VERSION} from '../version.mjs';
 import http from 'node:http';import crypto from 'node:crypto';
 import {approvalContract} from '../approvals/approval-contract.mjs';
 export function createMatcherHttpServer(matcher,{token,allowOnline=false,maxBytes=65536,maxConcurrent=2}={}){
@@ -10,7 +11,7 @@ export function createMatcherHttpServer(matcher,{token,allowOnline=false,maxByte
   if(token){const a=Buffer.from(req.headers.authorization||''),b=Buffer.from('Bearer '+token);if(a.length!==b.length||!crypto.timingSafeEqual(a,b)){send(401,{error:'UNAUTHORIZED'});return;}}
   if(running>=maxConcurrent){send(429,{error:'BUSY'});return;}running++;
   try{
-   if(req.method==='GET'&&req.url==='/health'){send(200,{status:'ok',name:'coz-sw-matcher',version:'0.1.0',mode:allowOnline?'online':'offline'});return;}
+   if(req.method==='GET'&&req.url==='/health'){send(200,{status:'ok',name:'coz-sw-matcher',version:VERSION,mode:allowOnline?'online':'offline'});return;}
    if(req.method==='GET'&&req.url==='/v1/approval-contract'){send(200,approvalContract);return;}
    if(req.method!=='POST'||req.url!=='/v1/match'){send(404,{error:'NOT_FOUND'});return;}
    if(!/^application\/json(?:;|$)/iu.test(req.headers['content-type']||'')){send(415,{error:'JSON_REQUIRED'});return;}

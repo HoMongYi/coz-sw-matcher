@@ -1,10 +1,83 @@
 {
- "$id":"coz-sw-match-input","type":"object","additionalProperties":false,"required":["product_name"],
- "properties":{
-  "product_name":{"type":"string","minLength":1,"maxLength":1000,"pattern":"\\S"},
-  "product_no":{"type":"string","maxLength":200},
-  "requested_software_kind":{"enum":["driver","firmware","control-app","web-driver","toolbox","utility","support"]},
-  "target_component":{"type":"integer","minimum":0},
-  "candidates":{"type":"array","maxItems":5,"items":{"type":"object","required":["url"],"properties":{"url":{"type":"string","maxLength":4096},"title":{"type":"string","maxLength":1000},"snippet":{"type":"string","maxLength":4000}}}}
- }
+  "$id": "coz-sw-match-input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "product_name"
+  ],
+  "properties": {
+    "product_name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "\\S"
+    },
+    "product_no": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "requested_software_kind": {
+      "enum": [
+        "driver",
+        "firmware",
+        "control-app",
+        "web-driver",
+        "toolbox",
+        "utility",
+        "support"
+      ]
+    },
+    "target_component": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "candidates": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "snippet": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "os": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "feature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        }
+      }
+    }
+  }
 }

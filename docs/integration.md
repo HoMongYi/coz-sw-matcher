@@ -26,6 +26,13 @@ CLI, JavaScript, HTTP, MCP는 같은 요청 형식을 사용한다.
 
 `requested_software_kind`는 `driver`, `firmware`, `control-app`, `web-driver`, `toolbox`, `utility`, `support` 중 하나다.
 결합상품의 `target_component`는 0부터 시작하는 구성품 인덱스다.
+생략하면 구성품별로 확인하고, SW 대상이 하나이며 나머지의 SW 없음이 명시적으로 확인된 경우만 선택한다.
+그 밖의 경우에는 `component_results`에 근거를 보존하고 보류한다.
+
+OS나 기능 조건을 알고 있다면 선택적인 `environment`를 전달할 수 있다.
+예를 들어 `{"os":"Windows 11","architecture":"x64","feature":"print"}`다.
+알려진 지원 범위와 충돌하면 `ENVIRONMENT_CONFLICT`, 근거가 부족하면 `ENVIRONMENT_UNVERIFIED`로 보류한다.
+조건을 생략했다고 모든 OS나 기능을 지원한다는 뜻은 아니다.
 
 ## 응답
 
@@ -33,13 +40,25 @@ CLI, JavaScript, HTTP, MCP는 같은 요청 형식을 사용한다.
 후보에는 URL과 순위, 제공사·종류, 페이지 목적, 검증 상태와 근거를 담는다.
 정확한 필드는 [응답 스키마](../schemas/match-result.schema.json)를 참고한다.
 
-`verified_at`은 현재 페이지를 검증한 시각이다.
+`verification`은 접속(`access`), 모델 지원(`model_support`), SW 대상(`software_target`)을 구분한다.
+`support_evidence`는 모델·SW 관계의 출처와 확인 범위이며, `locale`은 페이지 언어와 프로그램 지원 언어를 따로 담는다.
+`metrics.evidence_fetches`는 후보 페이지 외에 조회한 지원 근거 페이지 수다.
+상위 `requested_software_kind`는 요청 종류이고 후보의 `software_kind`는 알려진 실제 SW 종류다.
+예를 들어 일반 `driver` 요청에 NVIDIA App을 제시하면 후보 종류는 `utility`다.
+`software_scope`는 모델 전용, GPU 제품군, 공통 앱, 웹앱, 펌웨어, 지역 드라이버를 구분한다.
+자세한 판정과 제조사별 제한은 [지원 근거](support-evidence.md)를 따른다.
+
+`verified_at`은 현재 페이지를 검증한 날짜다.
 과거 자료의 확인일은 `dataset_checked_at`에 따로 남긴다.
 후보와 전체 결과의 `approved`는 항상 `false`다.
 
 `needs_human_approval`은 독립 검증을 마친 후보가 있어 사람의 선택을 기다리는 상태다.
 `needs_review`는 모델, 페이지 용도, 접속 상태 등의 추가 확인이 필요하다는 뜻이다.
 후보가 없어도 소프트웨어가 없다고 단정하지 않는다.
+
+기존 `needs_review`·`needs_human_approval` 상태와 승인 계약은 유지한다.
+새 필드는 추가 항목이며, 오프라인에서도 정확 모델의 Registry 매핑을 알면 재확인할 후보로 반환할 수 있다.
+`page_type`에는 `web-app`과 `software-hub`도 나타날 수 있으므로 이 필드를 별도 enum으로 제한한 클라이언트는 갱신해야 한다.
 
 ## 사람이 선택한 결과 검증
 

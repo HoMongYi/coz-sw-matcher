@@ -4,10 +4,10 @@
 
 | 파일 | 용도 |
 |---|---|
-| coz-sw-matcher-v0.1.0-source.zip | 소스와 로컬 테스트·문서 |
-| coz-sw-matcher-agent-skill-v0.1.0.zip | Agent Skill과 실행 wrapper |
-| coz-sw-matcher-codex-plugin-v0.1.0.zip | Skill·MCP 설정·runtime 번들 |
-| coz-sw-matcher-0.1.0.tgz | npm 형식의 로컬 설치 패키지 |
+| coz-sw-matcher-v0.2.0-source.zip | 소스와 로컬 테스트·문서 |
+| coz-sw-matcher-agent-skill-v0.2.0.zip | Agent Skill과 실행 wrapper |
+| coz-sw-matcher-codex-plugin-v0.2.0.zip | Skill·MCP 설정·runtime 번들 |
+| coz-sw-matcher-0.2.0.tgz | npm 형식의 로컬 설치 패키지 |
 | SHA256SUMS.txt | 배포 파일 SHA-256 |
 | release-manifest.json | 파일 크기·해시·패키지 검증 정보 |
 
@@ -19,10 +19,13 @@ npm run release:build
 python scripts/check-artifacts.py
 ```
 
-로컬 산출물은 dist/v0.1.0에 생성한다.
+로컬 산출물은 dist/v0.2.0에 생성한다.
 이 명령은 npm registry 게시나 GitHub 릴리스 생성을 수행하지 않는다.
 공개 allowlist·symlink·비밀 패턴·라이선스·해시를 검사한다.
 GitHub Actions는 사용하지 않는다.
+
+v0.2.0의 변경과 호환성 안내는 [릴리스 설명](../reports/RELEASE_NOTES_v0.2.0.md)에 있다.
+이전 v0.1.0 패키지도 해당 릴리스에서 받을 수 있다.
 
 
 ## 소개 영상

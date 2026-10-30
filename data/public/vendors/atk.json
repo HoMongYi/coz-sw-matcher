@@ -1,6 +1,92 @@
 {
- "id":"atk","name":"ATK","aliases":["ATK"],"domains":["www.atk.store"],
- "classification":"PUBLIC_SOURCE_ONLY","provenance":["https://www.atk.store/ko-kr/pages/atk-hub"],"verified_at":null,
- "noise_tokens":[],"model_aliases":[],"rules":[],"models":[],
- "ecosystems":[{"id":"atk-hub","name":"ATK HUB","canonical_page":"https://www.atk.store/ko-kr/pages/atk-hub","status":"needs-refresh","verified_at":null,"provenance":["https://www.atk.store/ko-kr/pages/atk-hub"],"support_mode":"explicit-model-list","supported_models":[],"excluded_models":[],"software_kind":"control-app"}]
+  "id": "atk",
+  "name": "ATK",
+  "aliases": [
+    "ATK"
+  ],
+  "domains": [
+    "www.atk.store",
+    "desktop.atkgear.com"
+  ],
+  "classification": "PUBLIC_SOURCE_ONLY",
+  "provenance": [
+    "https://www.atk.store/ko-kr/pages/atk-hub"
+  ],
+  "verified_at": null,
+  "noise_tokens": [],
+  "model_aliases": [],
+  "rules": [],
+  "models": [],
+  "ecosystems": [
+    {
+      "id": "atk-hub",
+      "name": "ATK HUB",
+      "canonical_page": "https://www.atk.store/ko-kr/pages/atk-hub",
+      "status": "needs-refresh",
+      "verified_at": null,
+      "provenance": [
+        "https://www.atk.store/ko-kr/pages/atk-hub"
+      ],
+      "support_mode": "explicit-model-list",
+      "supported_models": [
+        "VXE R1 SE+"
+      ],
+      "excluded_models": [],
+      "software_kind": "control-app",
+      "customer_priority": 3,
+      "customer_urls": [
+        "https://desktop.atkgear.com/home?hiddenNav=true"
+      ],
+      "page_role": "software-hub",
+      "evidence": [
+        {
+          "relationship": "software-support",
+          "source_url": "https://www.atk.store/ko-kr/products/vxe-dragonfly-r1-series-wireless-mouse",
+          "models": [
+            "VXE R1 SE+"
+          ],
+          "software_kind": "control-app",
+          "software_name": "ATK HUB",
+          "match_text": [
+            "R1 SE+",
+            "Customize DPI, polling rate, button assignments, macros, and more with ATK HUB."
+          ],
+          "observed_fact": "Official R1 series product page lists R1 SE+ and explicitly describes configuration using ATK HUB. Observed in browser; raw request failed during this run.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "No device connection test",
+            "Other dongles and new models are not included"
+          ]
+        },
+        {
+          "relationship": "official-distribution",
+          "source_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+          "target_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+          "launch_url": "https://desktop.atkgear.com/home?hiddenNav=true",
+          "models": [
+            "VXE R1 SE+"
+          ],
+          "match_text": [
+            "ATK HUB"
+          ],
+          "observed_fact": "Korean official hub embeds the desktop tool; browser web version links to v3-hub.atk.store. Static HTML alone may need rendering.",
+          "checked_at": "2026-10-29",
+          "unknowns": [
+            "Runtime JavaScript and device setup may require a browser"
+          ]
+        }
+      ]
+    }
+  ],
+  "support_relationships": [
+    {
+      "provider": "ATK HUB",
+      "domains": [
+        "desktop.atkgear.com"
+      ],
+      "source_url": "https://www.atk.store/ko-kr/pages/atk-hub",
+      "observed_fact": "Official Korean ATK HUB embeds https://desktop.atkgear.com/home?hiddenNav=true. The static page does not confirm every model.",
+      "checked_at": "2026-10-29"
+    }
+  ]
 }

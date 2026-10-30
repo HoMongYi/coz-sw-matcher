@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {VERSION} from '../src/version.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
@@ -21,7 +22,7 @@ export function optionsFromConfig(config){
 export async function main(argv=process.argv.slice(2),{write=text=>process.stdout.write(text),engine:injected}={}){
   const args=[],flags={};
   for(let i=0;i<argv.length;i++){const a=argv[i];if(a.startsWith('--')){if(['--offline','--legacy','--help'].includes(a))flags[a.slice(2)]=true;else if(['--output','--pipeline','--config','--name','--port','--host','--private','--public-registry'].includes(a)){if(!argv[i+1]||argv[i+1].startsWith('--'))throw new Error('OPTION_VALUE_REQUIRED');flags[a.slice(2)]=argv[++i];}else throw new Error('UNKNOWN_OPTION');}else args.push(a);}
-  if(flags.help||!args.length){write('HSUF 0.1.0\nresolve NAME|input.csv [--offline|--pipeline serpapi-openai-judge|--config pipeline.yaml] [--output result.csv] [--legacy]\naudit URL [--name PRODUCT]\nregistry validate|build\nserve [--port 8787] [--pipeline serpapi-openai-judge]\nmcp [--pipeline serpapi-openai-judge]\ndiscovery import file.json\n');return;}
+  if(flags.help||!args.length){write('HSUF '+VERSION+'\nresolve NAME|input.csv [--offline|--pipeline serpapi-openai-judge|--config pipeline.yaml] [--output result.csv] [--legacy]\naudit URL [--name PRODUCT]\nregistry validate|build\nserve [--port 8787] [--pipeline serpapi-openai-judge]\nmcp [--pipeline serpapi-openai-judge]\ndiscovery import file.json\n');return;}
   let providerOptions={};
   if(flags.config){const p=path.resolve(flags.config);if(fs.statSync(p).size>65536)throw new Error('CONFIG_TOO_LARGE');providerOptions=optionsFromConfig(YAML.parse(fs.readFileSync(p,'utf8')));}
   if(flags.pipeline)providerOptions={...providerOptions,...pipelineProviders(flags.pipeline)};
@@ -38,7 +39,7 @@ export async function main(argv=process.argv.slice(2),{write=text=>process.stdou
   if(args[0]==='audit'){emit(engine.audit(args[1],{product_name:flags.name||'unknown'}));return;}
   if(args[0]==='registry'){
     const registry=loadRegistry({publicDir:flags['public-registry'],privateDir:flags.private});const report=validateRegistry(registry.vendors);if(!report.valid)throw new Error('INVALID_REGISTRY');
-    if(args[1]==='build')fs.writeFileSync(path.join(ROOT,'data/public/registry.compiled.json'),JSON.stringify({version:'0.1.0',vendors:registry.vendors},null,2)+'\n');else if(args[1]!=='validate')throw new Error('UNKNOWN_REGISTRY_COMMAND');emit({...report,...engine.status()});return;
+    if(args[1]==='build')fs.writeFileSync(path.join(ROOT,'data/public/registry.compiled.json'),JSON.stringify({version:VERSION,vendors:registry.vendors},null,2)+'\n');else if(args[1]!=='validate')throw new Error('UNKNOWN_REGISTRY_COMMAND');emit({...report,...engine.status()});return;
   }
   if(args[0]==='serve'){
     const {createHttpServer}=await import('../src/http.mjs');const host=flags.host||'127.0.0.1',port=Number(flags.port||8787);if(!Number.isInteger(port)||port<0||port>65535)throw new Error('INVALID_PORT');

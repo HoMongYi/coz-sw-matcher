@@ -32,7 +32,8 @@ export function parseProductName(input, {vendors=[]}={}){
  let text=raw.normalize('NFKC');const brackets=bracketTree(text,warnings);
  const tag=/^\s*\[([^\]]+)\]/u.exec(text)?.[1]?.trim()||'';
  const brand=Object.keys(BRANDS).find(b=>BRANDS[b].some(a=>a.toLowerCase()===tag.toLowerCase()))
-  || vendors.find(v=>[v.name,...v.aliases].some(a=>a.toLowerCase()===tag.toLowerCase()))?.name||tag||null;
+  || vendors.find(v=>[v.name,...v.aliases].some(a=>a.toLowerCase()===tag.toLowerCase()))?.name||tag
+  ||Object.keys(BRANDS).find(b=>BRANDS[b].some(a=>new RegExp(`^\\s*${escape(a)}(?=\\s|$)`,'iu').test(text)))||null;
  const knownBrand=!!brand&&(Object.hasOwn(BRANDS,brand)||vendors.some(v=>v.name===brand));
  if(!knownBrand)warnings.push('BRAND_UNRESOLVED');
  const brandTokens=[...Object.values(BRANDS).flat(),...vendors.flatMap(v=>[v.name,...v.aliases])].map(escape).join('|');
@@ -47,19 +48,24 @@ export function parseProductName(input, {vendors=[]}={}){
  });
  let distributor=null;
  for(const d of DISTRIBUTORS)if(text.toUpperCase().includes(d.toUpperCase())){if(distributor&&distributor!==d)warnings.push('MULTIPLE_DISTRIBUTORS');distributor||=d;text=text.replace(new RegExp(escape(d),'giu'),' ');}
- text=text.replace(/[★⚡☆]([^★⚡☆]*)[★⚡☆]/gu,(all,note)=>{if(PROMOTION.test(note)){marketing_tags.push(spaces(note));return ' ';}return all;});
+ const promotionContent=content=>{
+  if(!PROMOTION.test(content))return content;
+  marketing_tags.push(spaces(content));
+  // Remove sale words, never the surrounding model/revision tokens.
+  return content.replace(/플래티넘|단독|결합할인|사은품\s*증정|특가|행사|할인|증정|당일출고|예약구매|사은품/gu,' ');
+ };
+ text=text.replace(/[★⚡☆]([^★⚡☆]*)[★⚡☆]/gu,(all,note)=>PROMOTION.test(note)?' '+promotionContent(note)+' ':all);
  text=text.replace(/^\s*\[[^\]]+\]/u,' ');
  // Classified groups can be removed; unknown groups are unwrapped and retained.
  for(const group of [...brackets].sort((a,b)=>b.depth-a.depth||b.start-a.start)){
   let content=spaces(group.text);const full=group.open+group.text+(group.open==='['?']':')');
   if(!text.includes(full))continue;
-  if(PROMOTION.test(content)){marketing_tags.push(content);text=text.replace(full,' ');}
+  if(PROMOTION.test(content)){text=text.replace(full,' '+promotionContent(content)+' ');}
   else if(/^(?:CPU쿨러|메인보드|키보드|마우스|프린터)$/iu.test(content)){sales_attributes.push(content);text=text.replace(full,' ');}
-  else if(COLORS.some(c=>content.includes(c))){variants.color=content;text=text.replace(full,' ');}
   else if(/^(?:정품|토너포함|저소음|벌크)\s*$/u.test(content)||/^인텔\w+\/(?:M-)?ATX$/iu.test(content)){sales_attributes.push(content);text=text.replace(full,' ');}
   else text=text.replace(full,' '+content+' ');
  }
- for(const color of COLORS){const re=new RegExp(`(^|[\\s/])${color}(?=$|[\\s/])`,'gu');if(re.test(text)){variants.color=color;text=text.replace(re,' ');}}
+ for(const color of COLORS){const re=new RegExp(`(^|[\\s/])${color}(?=$|[\\s/])`,'gu');if(re.test(text)){if(variants.color&&variants.color!==color)warnings.push('MULTIPLE_COLOR_VARIANTS');variants.color=color;text=text.replace(re,' ');}}
  const switchMatch=/((?:라이트\s*)?(?:저소음\s*)?(?:바나나축|[\p{L}]+축)|후아노(?:\s*저소음)?)/u.exec(text);
  if(switchMatch){variants.switch=spaces(switchMatch[0]);text=text.replace(switchMatch[0],' ');}
  text=text.replace(/(?:정품박스|정품|벌크|한글판|토너포함)/gu,s=>{sales_attributes.push(s);return ' ';});
@@ -70,12 +76,14 @@ export function parseProductName(input, {vendors=[]}={}){
  }
  for(const a of [brand,...(BRANDS[brand]||[])].filter(Boolean))text=text.replace(new RegExp(`(^|\\s)${escape(a)}(?=\\s|$)`,'giu'),' ');
  text=text.replace(/흑백\s*레이저\s*프린터|레이저\s*프린터|프로세서|지포스|기계식\s*키보드/gu,' ');
+ text=text.replace(/(^|\s)(?:마우스|키보드|프린터|복합기)(?=\s|$)/gu,' ');
  if(category==='gpu'){
   const mem=text.match(/\bD[56]\b/u)?.[0],capacity=text.match(/\b\d+GB\b/iu)?.[0];
   if(mem){variants.graphics_memory=mem;text=text.replace(mem,' ');}if(capacity){variants.capacity=capacity;text=text.replace(capacity,' ');}
  }
  text=spaces(text.replace(/[\[\]()]/gu,' ').replace(/\s*\/\s*$/u,''));
  const d=discriminators(text);Object.assign(variants,{...(d.memory?{memory_generation:d.memory}:{}),...(d.wifi?{wifi:d.wifi}:{}),...(d.revision?{revision:d.revision}:{}),...(d.capacity?{capacity:d.capacity}:{})});
- if(!/\d/u.test(text))warnings.push('MODEL_UNRESOLVED');
+ const registered=vendors.filter(v=>v.name===brand).flatMap(v=>[...v.models,...v.ecosystems]).some(r=>[r.model,...r.supported_models].filter(Boolean).some(m=>m.toUpperCase()===text.toUpperCase()));
+ if(!/\d/u.test(text)&&!registered)warnings.push('MODEL_UNRESOLVED');
  return {product_no:input?.product_no??null,raw_product_name:raw,brand,manufacturer:brand,distributor,software_provider:brand,model:text||null,category,variants,model_variants:variants,marketing_tags:[...new Set(marketing_tags)],sales_attributes:[...new Set(sales_attributes)],related_models,components:[],brackets,ambiguous:warnings.length>0,warnings:[...new Set(warnings)]};
 }

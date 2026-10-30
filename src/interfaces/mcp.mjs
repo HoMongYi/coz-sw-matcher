@@ -1,12 +1,14 @@
+import {VERSION} from '../version.mjs';
 import {McpServer} from '@modelcontextprotocol/server';
 import {StdioServerTransport} from '@modelcontextprotocol/server/stdio';
 import {z} from 'zod';
 import {parseProductName} from '../parser/compuzone-name-parser.mjs';
 import {approvalContract} from '../approvals/approval-contract.mjs';
 const candidate=z.object({url:z.string().max(4096),title:z.string().max(1000).optional(),snippet:z.string().max(4000).optional()}).strict();
-const input=z.object({product_no:z.string().max(200).optional(),product_name:z.string().min(1).max(1000),requested_software_kind:z.enum(['driver','firmware','control-app','web-driver','toolbox','utility','support']).optional(),candidates:z.array(candidate).max(5).optional(),target_component:z.number().int().min(0).optional()}).strict();
+const environment=z.object({os:z.string().min(1).max(100).optional(),architecture:z.string().min(1).max(100).optional(),feature:z.string().min(1).max(100).optional()}).strict();
+const input=z.object({product_no:z.string().max(200).optional(),product_name:z.string().min(1).max(1000),requested_software_kind:z.enum(['driver','firmware','control-app','web-driver','toolbox','utility','support']).optional(),candidates:z.array(candidate).max(5).optional(),target_component:z.number().int().min(0).optional(),environment:environment.optional()}).strict();
 export function createMatcherMcpServer(matcher,{allowOnline=false}={}){
- const server=new McpServer({name:'coz-sw-matcher',version:'0.1.0'});
+ const server=new McpServer({name:'coz-sw-matcher',version:VERSION});
  const register=(name,description,inputSchema,handler,online=false)=>server.registerTool(name,{description,inputSchema,outputSchema:z.object({}).passthrough(),annotations:{readOnlyHint:true,destructiveHint:false,idempotentHint:!online,openWorldHint:online}},async args=>{
   try{const value=await handler(args);return{content:[{type:'text',text:JSON.stringify(value)}],structuredContent:value};}catch{return{content:[{type:'text',text:'INVALID_REQUEST'}],isError:true};}
  });
